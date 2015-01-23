@@ -67,7 +67,7 @@ function make_resolver (opts) {
     }
 
     return resolver(rec.alias.id || rec.id, rec.opts, function (err, res) {
-      if (rec.alias.expose) expose(rec.alias.expose, res);
+      if (! err && rec.alias.expose) expose(rec.alias.expose, res);
       cb(err, res);
     });
   };
