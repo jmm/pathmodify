@@ -1,11 +1,16 @@
 var
-  path = require('path');
+  path = require('path'),
+  rs = require('browserify/node_modules/readable-stream'),
+  mappings = {};
 
 function plugin (b, opts) {
   var
-    deps = b.pipeline.get('deps').get(0),
+    deps = b.pipeline.get('deps'),
     pack = b.pipeline.get('pack').get(0),
     stream;
+
+  deps.push(aliaser());
+  deps = deps.get(0);
 
   opts.deps = deps;
   opts.resolver = deps.resolver;
@@ -13,7 +18,7 @@ function plugin (b, opts) {
   // This is a hack to get browserify to export a require(). The alternative is
   // to set b.pipeline.get('pack').get(0).hasExports = true when something is
   // exposed. Pick your poison.
-  stream = require('browserify/node_modules/readable-stream').PassThrough();
+  stream = rs.PassThrough();
   stream.end(";");
   b.require(stream);
 
@@ -55,8 +60,12 @@ function make_resolver (opts) {
 
     if (! processed) par_vis[rec.id] = rec;
 
+    // Calling walk() is the alternative to pushing the pipeline step (as
+    // above). Currently unused.
+
     // Aliased, exposed, and not previously visited.
     if (
+      false &&
       ! processed &&
       rec.alias.expose
     ) {
@@ -67,7 +76,10 @@ function make_resolver (opts) {
     }
 
     return resolver(rec.alias.id || rec.id, rec.opts, function (err, res) {
-      if (! err && rec.alias.expose) expose(rec.alias.expose, res);
+      if (! err && rec.alias.expose) {
+        mappings[res] = rec.alias.expose;
+        expose(rec.alias.expose, res);
+      }
       cb(err, res);
     });
   };
@@ -109,6 +121,25 @@ function make_resolver (opts) {
   // alias
 }
 // make_resolver
+
+function aliaser () {
+  var stream = new rs.Transform({objectMode: true});
+
+  stream._transform = write;
+
+  function write (rec, enc, cb) {
+    if (mappings[rec.file]) {
+      rec.id = mappings[rec.file];
+    }
+
+    this.push(rec);
+    cb();
+  }
+  // write
+
+  return stream;
+}
+// aliaser
 
 function simple (from, to, type) {
   return {from: from, to: to, type: type};
