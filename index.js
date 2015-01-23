@@ -75,12 +75,12 @@ function make_resolver (opts) {
       }, opts, cb);
     }
 
-    return resolver(rec.alias.id || rec.id, rec.opts, function (err, res) {
+    return resolver(rec.alias.id || rec.id, rec.opts, function (err, res, pkg) {
       if (! err && rec.alias.expose) {
         mappings[res] = rec.alias.expose;
         expose(rec.alias.expose, res);
       }
-      cb(err, res);
+      cb(err, res, pkg);
     });
   };
   // alias_resolver
