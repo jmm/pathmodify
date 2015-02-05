@@ -86,9 +86,17 @@ function make_resolver (opts) {
   // alias_resolver
 
   function alias (rec) {
-    var matched, id = rec.id;
+    var
+      matched,
+      id = rec.id;
 
     rec.alias = {id: rec.id};
+    rec.alias.opts = {};
+
+    if (rec.opts) {
+      rec.alias.opts.id = rec.opts.id;
+      rec.alias.opts.filename = rec.opts.filename;
+    }
 
     aliases.every(function (alias) {
       matched = true;
