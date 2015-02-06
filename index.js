@@ -82,7 +82,7 @@ function make_resolver (opts) {
       }
       cb(err, res, pkg);
     });
-  };
+  }
   // alias_resolver
 
   function alias (rec) {
