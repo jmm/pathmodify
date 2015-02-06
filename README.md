@@ -20,7 +20,7 @@ Say you have a directory structure like...
 ...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured and you want to be able to `require()` `somedir/src/model/whatever.js` or `somedir/src/...` from anywhere in the dependency graph without using `./` / `../` relative paths. You also don't want to store the files or symlink to them under `node_modules` because it will break programmatic application of transforms.
 
 # Example usage
-    var path_aliaser = require('browserify-path-aliaser/index.js');
+    var pathmodify = require('pathmodify');
 
     var opts = {
       aliases: [
@@ -37,7 +37,7 @@ Say you have a directory structure like...
     };
 
     browserify('./src/entry')
-      .plugin(path_aliaser, opts)
+      .plugin(pathmodify, opts)
 
 The structure of the members of the `aliases` array is a work in progress. But
 suffice it to say that for the time being you can pass a function that will receive an object like this:
