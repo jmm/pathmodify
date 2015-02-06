@@ -4,7 +4,6 @@ This is a [browserify](https://github.com/substack/node-browserify) plugin that'
 
 Say you have a directory structure like...
 
-    example
     +-- src/
         +-- entry.js
         +-- model/
