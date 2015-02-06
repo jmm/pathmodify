@@ -23,6 +23,8 @@ Say you have a directory structure like...
     var pathmodify = require('pathmodify');
 
     var opts = {
+      // Feel free to think of 'mods' as referring to either modifications or
+      // module IDs that are being altered.
       mods: [
         function (rec) {
           var alias = {};
