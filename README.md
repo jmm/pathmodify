@@ -19,7 +19,9 @@ Say you have a directory structure like...
 ...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured and you want to be able to `require()` `somedir/src/model/whatever.js` or `somedir/src/...` from anywhere in the dependency graph without using `./` / `../` relative paths. You also don't want to store the files or symlink to them under `node_modules` because it will break programmatic application of transforms (e.g. `browserify('./src/entry').transform(whatever)`).
 
 # Example usage
-    var pathmodify = require('pathmodify');
+    var
+      path = require('path'),
+      pathmodify = require('pathmodify');
 
     var opts = {
       // Feel free to think of 'mods' as referring to either modifications or
@@ -28,8 +30,9 @@ Say you have a directory structure like...
         function (rec) {
           var alias = {};
 
-          if (rec.id.indexOf('app/') === 0) {
-            alias.id = __dirname + '/src/' + rec.id.substr('app/');
+          var prefix = 'app' + path.sep;
+          if (rec.id.indexOf(prefix) === 0) {
+            alias.id = path.join(__dirname, 'src', rec.id.substr(prefix));
           }
 
           return alias;
