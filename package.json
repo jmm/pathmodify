@@ -1,6 +1,7 @@
 {
   "private": true,
   "version": "0.1.0",
+  "main": "index.js",
   "license": "MIT",
   "author": "Jesse McCarthy (http://software.jessemccarthy.net/)",
   "scripts": {
