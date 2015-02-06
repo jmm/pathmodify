@@ -2,5 +2,11 @@
   "private": true,
   "version": "0.1.0",
   "license": "MIT",
-  "author": "Jesse McCarthy (http://software.jessemccarthy.net/)"
+  "author": "Jesse McCarthy (http://software.jessemccarthy.net/)",
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
+  "devDependencies": {
+    "mocha": "2.x"
+  }
 }
