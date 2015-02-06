@@ -41,7 +41,7 @@ function make_resolver (opts) {
     resolver = opts.resolver,
     walk = opts.deps.walk.bind(opts.deps),
     expose = opts.expose,
-    aliases = opts.aliases,
+    aliases = Array.isArray(opts.mods) ? opts.mods : [],
     visited = {},
     bify = opts.bify;
 

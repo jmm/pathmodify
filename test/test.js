@@ -37,7 +37,7 @@ describe('Plugin', function () {
         basedir: __dirname,
       })
         .plugin(pathmodify, {
-          aliases: [aliaser]
+          mods: [aliaser]
         })
         .bundle(function (err, src) {
           if (err) throw err;

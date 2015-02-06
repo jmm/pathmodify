@@ -23,7 +23,7 @@ Say you have a directory structure like...
     var pathmodify = require('pathmodify');
 
     var opts = {
-      aliases: [
+      mods: [
         function (rec) {
           var alias = {};
 
@@ -39,7 +39,7 @@ Say you have a directory structure like...
     browserify('./src/entry')
       .plugin(pathmodify, opts)
 
-The structure of the members of the `aliases` array is a work in progress. But
+The structure of the members of the `mods` array is a work in progress. But
 suffice it to say that for the time being you can pass a function that will receive an object like this:
 
     {
