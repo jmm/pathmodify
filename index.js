@@ -12,6 +12,8 @@ function plugin (b, opts) {
   deps.push(aliaser());
   deps = deps.get(0);
 
+  opts.bify = b;
+
   opts.deps = deps;
   opts.resolver = deps.resolver;
 
@@ -40,7 +42,8 @@ function make_resolver (opts) {
     walk = opts.deps.walk.bind(opts.deps),
     expose = opts.expose,
     aliases = opts.aliases,
-    visited = {};
+    visited = {},
+    bify = opts.bify;
 
   return alias_resolver;
 
@@ -76,9 +79,15 @@ function make_resolver (opts) {
     }
 
     return resolver(rec.alias.id || rec.id, rec.opts, function (err, res, pkg) {
-      if (! err && rec.alias.expose) {
-        mappings[res] = rec.alias.expose;
-        expose(rec.alias.expose, res);
+      if (! err) {
+        if (rec.alias.expose) {
+          mappings[res] = rec.alias.expose;
+          expose(rec.alias.expose, res);
+        }
+        bify.emit('pathmodify:resolved', {
+          rec: rec,
+          file: res,
+        });
       }
       cb(err, res, pkg);
     });
