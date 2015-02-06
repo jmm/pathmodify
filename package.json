@@ -7,6 +7,10 @@
     "test": "mocha test/*.js"
   },
   "devDependencies": {
-    "mocha": "2.x"
+    "mocha": "2.x",
+    "browserify": ">=5.1.0"
+  },
+  "peerDependencies": {
+    "browserify": ">=5.1.0"
   }
 }
