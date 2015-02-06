@@ -41,8 +41,7 @@ Say you have a directory structure like...
     browserify('./src/entry')
       .plugin(pathmodify, opts)
 
-The structure of the members of the `mods` array is a work in progress. But
-suffice it to say that for the time being you can pass a function that will receive an object like this:
+The structure of the members of the `mods` array is a work in progress. But suffice it to say that for the time being you can pass a function that will receive an object like this:
 
     {
       // The string passed to `require()`
