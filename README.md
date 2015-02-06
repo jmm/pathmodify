@@ -65,3 +65,12 @@ It should leave the passed object alone and return an object like this if the `i
     }
 
 If you don't want to alias the `id` to something else, return anything else (or nothing).
+
+# node_modules
+
+As alluded to earlier, ordinarily you could store or symlink your application as something like `node_modules/app` and require its files from node like `require('app/something/whatever')`. But if you do that in browserify you lose the ability to apply transforms like:
+
+    browserify('./entry')
+      .transform(some_transform)
+
+With this plugin you can get the best of both worlds by symlinking your application under `node_modules` and get the normal resolution behavior in node, and use the same paths in browserify by rewriting them to absolute paths (outside of `node_modules`) or paths relative to the requiring file. So if you have say `/somedir/src` synlinked as `node_modules/app`, configure this plugin and point browserify at entry files under `src`.
