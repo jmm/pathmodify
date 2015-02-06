@@ -64,4 +64,4 @@ It should leave the passed object alone and return an object like this if the `i
       expose: '...'
     }
 
-If you don't want to alias the `id` to something else, return anything else.
+If you don't want to alias the `id` to something else, return anything else (or nothing).
