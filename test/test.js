@@ -1,10 +1,24 @@
 var
   bify = require('browserify'),
+  rs = require('browserify/node_modules/readable-stream'),
+  util = require('util'),
   pathmodify = require('../'),
   path = require('path'),
   assert = require('assert'),
   vm = require('vm'),
   b;
+
+function xform () {
+  var self = this;
+  rs.Transform.apply(self, arguments);
+};
+
+util.inherits(xform, rs.Transform);
+
+xform.prototype._transform = function (chunk, enc, cb) {
+  this.push(chunk.toString().replace("lowercase", "UPPERCASE"));
+  cb();
+};
 
 describe('Plugin', function () {
 
@@ -39,6 +53,7 @@ describe('Plugin', function () {
         .plugin(pathmodify, {
           mods: [aliaser]
         })
+        .transform(function (file) { return new xform; })
         .bundle(function (err, src) {
           if (err) throw err;
 
