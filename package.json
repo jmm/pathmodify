@@ -5,6 +5,12 @@
   "main": "index.js",
   "license": "MIT",
   "author": "Jesse McCarthy (http://software.jessemccarthy.net/)",
+  "files": [
+    "index.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "mocha test/*.js"
   },
