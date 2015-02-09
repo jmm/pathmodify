@@ -30,7 +30,7 @@ describe('Plugin', function () {
   // aliaser
 
   it(
-    "Should resolve 'app/a/a' as 'src/a/a.js' and expose as 'whatever'",
+    "Should resolve 'app/a/a' as 'src/a/a.js', expose as 'whatever', and apply programmatic transform.",
     function (done) {
       b = bify({
         entries: ['./src/entry'],
@@ -45,7 +45,7 @@ describe('Plugin', function () {
           var c = {};
           vm.runInNewContext(src.toString(), c);
 
-          assert.equal(c.require('whatever'), 'app/a/a.js');
+          assert.equal(c.require('whatever'), 'UPPERCASE app/a/a.js');
 
           done();
         });

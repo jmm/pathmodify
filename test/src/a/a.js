@@ -1,1 +1,1 @@
-module.exports = "app/a/a.js";
+module.exports = "lowercase app/a/a.js";
