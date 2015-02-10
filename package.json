@@ -11,6 +11,16 @@
     "README.md",
     "LICENSE"
   ],
+  "keywords": [
+    "browserify",
+    "browserify-plugin",
+    "alias",
+    "map",
+    "rewrite",
+    "path",
+    "directory",
+    "require"
+  ],
   "scripts": {
     "test": "mocha test/*.js"
   },
