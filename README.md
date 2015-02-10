@@ -1,9 +1,12 @@
-This is a [browserify](https://github.com/substack/node-browserify) plugin that's meant to do the same kind of thing as [aliasify](https://github.com/benbria/aliasify) and [remapify](https://github.com/joeybaker/remapify), but in a more elegant, powerful way. It's in its infancy and rough. For the time being don't even expect the repo name not to change. Right now it's an experiment / proof of concept, not for production, but feel free to try it in a non-critical application. If it seems like people are interested I may explore it further.
+This is a [browserify](https://github.com/substack/node-browserify) plugin that's meant to do the same kind of thing as [aliasify](https://github.com/benbria/aliasify) and [remapify](https://github.com/joeybaker/remapify), but in a more elegant, powerful way. This is very experimental right now, a proof of concept. It's only been tested by [me](https://github.com/jmm) so far. If it seems like people are interested I may pursue it further.
 
 # Purpose
 
+In a nutshell, rewrite (AKA alias, map) `require()` IDs / paths to different values. E.g. rewrite `require('app/model/something')` to a relative path, e.g. `./model/something`. The point is to avoid having to use cumbersome relative paths (e.g. `./` and `../`) throughout your browserified application, and still be able to apply transforms programatically, e.g. `browserify().transform(something)`. This can be used to alias entire directories or any specific ID strings passed to `require()`, and the rewriting can be dependent on the path of the requiring file as well.
+
 Say you have a directory structure like...
 
+    somedir/
     +-- src/
         +-- entry.js
         +-- model/
@@ -16,7 +19,7 @@ Say you have a directory structure like...
 
     require('app/model/whatever');
 
-...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured and you want to be able to `require()` `somedir/src/model/whatever.js` or `somedir/src/...` from anywhere in the dependency graph without using `./` / `../` relative paths. You also don't want to store the files or symlink to them under `node_modules` because it will break programmatic application of transforms (e.g. `browserify('./src/entry').transform(whatever)`).
+...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured and you want to be able to `require()` `somedir/src/model/whatever.js` or `somedir/src/...` from anywhere in the dependency graph without using `./` / `../` relative paths. You also don't want to store the files or symlink to them under `node_modules` because it will break programmatic application of transforms (e.g. `browserify('./src/entry').transform(whatever)`). (But, see below -- you can combine this tool with symlinking to get the best of both worlds.)
 
 # Example usage
     var
