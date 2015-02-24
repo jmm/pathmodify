@@ -1,9 +1,10 @@
 var
   path = require('path'),
   rs = require('browserify/node_modules/readable-stream'),
-  mappings = {};
+  mappings = {},
+  plugin;
 
-function plugin (b, opts) {
+function pathmodify (b, opts) {
   var
     deps = b.pipeline.get('deps'),
     pack = b.pipeline.get('pack').get(0),
@@ -34,7 +35,9 @@ function plugin (b, opts) {
 
   deps.resolver = make_resolver(opts);
 }
-// plugin
+// pathmodify
+
+plugin = pathmodify;
 
 function make_resolver (opts) {
   var
