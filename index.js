@@ -60,7 +60,7 @@ function make_resolver (opts) {
 
     processed = par_vis[rec.id];
 
-    rec = processed || alias(rec);
+    rec = processed || modify(rec);
 
     processed = !! processed;
 
@@ -109,7 +109,7 @@ function make_resolver (opts) {
   }
   // alias_with_func
 
-  function alias (rec) {
+  function modify (rec) {
     var
       matched,
       id = rec.id,
@@ -155,7 +155,7 @@ function make_resolver (opts) {
 
     return rec;
   }
-  // alias
+  // modify
 }
 // make_resolver
 
