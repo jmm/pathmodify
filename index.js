@@ -97,6 +97,18 @@ function make_resolver (opts) {
   }
   // alias_resolver
 
+  /**
+   * Process a modification that's a function or where the replacement is a
+   * function.
+   */
+  function alias_with_func (f, rec) {
+    var ret = {};
+    ret.alias = f(rec);
+    ret.matched = ret.alias.id !== rec.id;
+    return ret;
+  }
+  // alias_with_func
+
   function alias (rec) {
     var
       matched,
