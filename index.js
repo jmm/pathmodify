@@ -14,6 +14,8 @@ function pathmodify (b, opts) {
     pack = b.pipeline.get('pack').get(0),
     stream;
 
+  opts = opts || {};
+
   deps.push(aliaser());
   deps = deps.get(0);
 
