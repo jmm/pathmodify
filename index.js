@@ -65,7 +65,7 @@ function make_resolver (opts) {
    */
   function alias_resolver (id, opts, cb) {
     var
-      rec = {id: id, opts: opts},
+      rec = {id: id, opts: {filename: opts.filename}},
       // Record of already processed require() ID's, keyed on parent filename.
       par_vis = visited[opts.filename] || {},
       // boolean Whether the id has already been processed.
@@ -100,7 +100,7 @@ function make_resolver (opts) {
     }
 
     // Delegate to original resolver.
-    return resolver(rec.alias.id || rec.id, rec.opts, function (err, res, pkg) {
+    return resolver(rec.alias.id || rec.id, opts, function (err, res, pkg) {
       if (! err) {
         if (rec.alias.expose) {
           mappings[res] = rec.alias.expose;
