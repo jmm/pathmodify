@@ -245,4 +245,8 @@ plugin.d = plugin.dir = function (from, to) {
   return simple(from, to, 'd');
 };
 
+plugin.re = function (from, to) {
+  return simple(from, to, 're');
+}
+
 module.exports = plugin;
