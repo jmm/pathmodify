@@ -112,33 +112,27 @@ function make_resolver (opts) {
   function alias (rec) {
     var
       matched,
-      id = rec.id;
+      id = rec.id,
+      alias = {},
+      temp = {};
 
-    rec.alias = {id: rec.id};
-    rec.alias.opts = {};
-
-    if (rec.opts) {
-      rec.alias.opts.id = rec.opts.id;
-      rec.alias.opts.filename = rec.opts.filename;
-    }
-
-    aliases.every(function (alias) {
+    aliases.every(function (aliaser) {
       matched = true;
 
       if (
         (
-          alias.type === 'd' &&
-          rec.id.indexOf(alias.from + path.sep) === 0
+          aliaser.type === 'd' &&
+          rec.id.indexOf(aliaser.from + path.sep) === 0
         )
 
         ||
 
-        (alias.type === 'f' && rec.id === alias.from)
+        (aliaser.type === 'f' && rec.id === aliaser.from)
       ) {
-        rec.alias.id = alias.to + rec.id.substr(alias.from.length);
+        alias.id = aliaser.to + rec.id.substr(aliaser.from.length);
       }
-      else if (typeof alias === 'function') {
-        rec.alias = alias(rec.alias);
+      else if (typeof aliaser === 'function') {
+        alias = aliaser(rec);
       }
       else matched = false;
 
@@ -146,6 +140,7 @@ function make_resolver (opts) {
     });
 
     rec.id = id;
+    rec.alias = alias;
     if (! (rec.alias && rec.alias.id)) rec.alias = {};
 
     return rec;
