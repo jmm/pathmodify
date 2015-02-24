@@ -237,16 +237,24 @@ function simple (from, to, type) {
 }
 // simple
 
-plugin.id = plugin.f = plugin.file = function (from, to) {
-  return simple(from, to, 'f');
-};
+[
+  ['f', ['id', 'file']],
+  ['d', ['dir']],
+  ['re'],
+].forEach(function (type_def) {
+  var
+    type = type_def[0],
+    aliases = type_def[1];
 
-plugin.d = plugin.dir = function (from, to) {
-  return simple(from, to, 'd');
-};
+  plugin[type] = function (from, to) {
+    return simple(from, to, type);
+  };
 
-plugin.re = function (from, to) {
-  return simple(from, to, 're');
-}
+  if (Array.isArray(aliases)) {
+    aliases.forEach(function (alias) {
+      plugin[alias] = plugin[type];
+    });
+  }
+});
 
 module.exports = plugin;
