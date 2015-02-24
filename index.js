@@ -44,7 +44,7 @@ function make_resolver (opts) {
     resolver = opts.resolver,
     walk = opts.deps.walk.bind(opts.deps),
     expose = opts.expose,
-    aliases = Array.isArray(opts.mods) ? opts.mods : [],
+    modifiers = Array.isArray(opts.mods) ? opts.mods : [],
     visited = {},
     bify = opts.bify;
 
@@ -116,23 +116,33 @@ function make_resolver (opts) {
       alias = {},
       temp = {};
 
-    aliases.every(function (aliaser) {
+    modifiers.every(function (modifier) {
       matched = true;
 
       if (
         (
-          aliaser.type === 'd' &&
-          rec.id.indexOf(aliaser.from + path.sep) === 0
+          modifier.type === 'd' &&
+          rec.id.indexOf(modifier.from + path.sep) === 0
         )
 
         ||
 
-        (aliaser.type === 'f' && rec.id === aliaser.from)
+        (modifier.type === 'f' && rec.id === modifier.from)
       ) {
-        alias.id = aliaser.to + rec.id.substr(aliaser.from.length);
+        if (typeof modifier.to === 'function') {
+          temp = alias_with_func(modifier.to, rec);
+          alias = temp.alias;
+          matched = temp.matched;
+        }
+        else {
+          alias.id = modifier.to + rec.id.substr(modifier.from.length);
+        }
       }
-      else if (typeof aliaser === 'function') {
-        alias = aliaser(rec);
+
+      else if (typeof modifier === 'function') {
+        temp = alias_with_func(modifier, rec);
+        alias = temp.alias;
+        matched = temp.matched;
       }
       else matched = false;
 
