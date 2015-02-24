@@ -98,6 +98,24 @@ function make_resolver (opts) {
   // alias_resolver
 
   /**
+   * Process exposure configuration.
+   */
+  function set_expose (rec, alias, modifier) {
+    if (modifier.expose === true) {
+      alias.expose = rec.id;
+    }
+    else if (typeof modifier.expose === 'string') {
+      alias.expose = modifier.expose;
+    }
+    else if (typeof modifier.expose === 'function') {
+      alias.expose = modifier.expose(rec, alias);
+    }
+
+    return alias;
+  }
+  // set_expose
+
+  /**
    * Process a modification that's a function or where the replacement is a
    * function.
    */
@@ -145,6 +163,8 @@ function make_resolver (opts) {
         matched = temp.matched;
       }
       else matched = false;
+
+      if (matched) set_expose(rec, alias, modifier);
 
       return ! matched;
     });
