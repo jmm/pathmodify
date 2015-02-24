@@ -162,6 +162,13 @@ function make_resolver (opts) {
         alias = temp.alias;
         matched = temp.matched;
       }
+
+      else if (
+        modifier.type === 're' && (matched = modifier.from.test(rec.id))
+      ) {
+        alias.id = rec.id.replace(modifier.from, modifier.to);
+      }
+
       else matched = false;
 
       if (matched) set_expose(rec, alias, modifier);
