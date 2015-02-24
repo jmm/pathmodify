@@ -15,7 +15,7 @@
     "url": "https://github.com/jmm/pathmodify.git"
   },
   "homepage": "https://github.com/jmm/pathmodify",
-  "description": "In a nutshell, rewrite (AKA alias, map) `require()` IDs / paths / directories to different values.",
+  "description": "Rewrite (alias) and expose `require()` IDs in browserify.",
   "keywords": [
     "browserify",
     "browserify-plugin",
@@ -24,7 +24,9 @@
     "rewrite",
     "path",
     "directory",
-    "require"
+    "require",
+    "expose",
+    "exposure"
   ],
   "scripts": {
     "test": "mocha test/*.js"
