@@ -1,9 +1,13 @@
 var
   path = require('path'),
   rs = require('browserify/node_modules/readable-stream'),
+  // Map resolved pathnames to expose IDs.
   mappings = {},
   plugin;
 
+/**
+ * Main plugin.
+ */
 function pathmodify (b, opts) {
   var
     deps = b.pipeline.get('deps'),
@@ -39,6 +43,9 @@ function pathmodify (b, opts) {
 
 plugin = pathmodify;
 
+/**
+ * Make a custom resolve function to override module-deps resolver.
+ */
 function make_resolver (opts) {
   var
     resolver = opts.resolver,
@@ -50,20 +57,29 @@ function make_resolver (opts) {
 
   return alias_resolver;
 
+  /**
+   * Custom resolve function. Same signature as node-resolve and
+   * node-browser-resolve.
+   */
   function alias_resolver (id, opts, cb) {
     var
       rec = {id: id, opts: opts},
+      // Record of already processed require() ID's, keyed on parent filename.
       par_vis = visited[opts.filename] || {},
+      // boolean Whether the id has already been processed.
       processed;
 
     visited[opts.filename] = par_vis;
 
+    // Retrieve any existing record for this id for this parent.
     processed = par_vis[rec.id];
 
+    // Process modifiers for this module if it hasn't previously been processed.
     rec = processed || modify(rec);
 
     processed = !! processed;
 
+    // Assign processed record to the records for its parent.
     if (! processed) par_vis[rec.id] = rec;
 
     // Calling walk() is the alternative to pushing the pipeline step (as
@@ -81,6 +97,7 @@ function make_resolver (opts) {
       }, opts, cb);
     }
 
+    // Delegate to original resolver.
     return resolver(rec.alias.id || rec.id, rec.opts, function (err, res, pkg) {
       if (! err) {
         if (rec.alias.expose) {
@@ -127,9 +144,15 @@ function make_resolver (opts) {
   }
   // alias_with_func
 
+  /**
+   * Apply modifiers configured by the user.
+   */
   function modify (rec) {
     var
+      // Switch for terminating looping over the modifiers once a match is
+      // found.
       matched,
+      // Restore this in the end in case the user modifies it.
       id = rec.id,
       alias = {},
       temp = {};
@@ -186,12 +209,16 @@ function make_resolver (opts) {
 }
 // make_resolver
 
+/**
+ * Following module-deps, update record id's to reflect exposure configuration.
+ */
 function aliaser () {
   var stream = new rs.Transform({objectMode: true});
 
   stream._transform = write;
 
   function write (rec, enc, cb) {
+    // User exposed this file under an alternate id.
     if (mappings[rec.file]) {
       rec.id = mappings[rec.file];
     }
