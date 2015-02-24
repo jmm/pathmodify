@@ -203,7 +203,7 @@ function simple (from, to, type) {
 }
 // simple
 
-plugin.f = plugin.file = function (from, to) {
+plugin.id = plugin.f = plugin.file = function (from, to) {
   return simple(from, to, 'f');
 };
 
