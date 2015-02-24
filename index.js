@@ -237,6 +237,9 @@ function simple (from, to, type) {
 }
 // simple
 
+// Functions for generating entries in opts.mods.
+plugin.mod = {};
+
 [
   ['f', ['id', 'file']],
   ['d', ['dir']],
@@ -246,13 +249,13 @@ function simple (from, to, type) {
     type = type_def[0],
     aliases = type_def[1];
 
-  plugin[type] = function (from, to) {
+  plugin.mod[type] = function (from, to) {
     return simple(from, to, type);
   };
 
   if (Array.isArray(aliases)) {
     aliases.forEach(function (alias) {
-      plugin[alias] = plugin[type];
+      plugin.mod[alias] = plugin.mod[type];
     });
   }
 });
