@@ -50,24 +50,29 @@ describe('Plugin', function () {
   }
   // aliaser
 
+  function run_test (opts, done) {
+    bify(bify_opts)
+      .plugin(pathmodify, opts)
+      .transform(function (file) { return new Xform; })
+      .bundle(function (err, src) {
+        if (err) throw err;
+
+        var c = {};
+        vm.runInNewContext(src.toString(), c);
+
+        assert.equal(c.require('whatever'), 'UPPERCASE app/a/a.js');
+
+        done();
+      });
+  }
+  // run_test
+
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via function, expose as 'whatever', and apply programmatic transform.",
     function (done) {
-      b = bify(bify_opts)
-        .plugin(pathmodify, {
-          mods: [aliaser]
-        })
-        .transform(function (file) { return new Xform; })
-        .bundle(function (err, src) {
-          if (err) throw err;
-
-          var c = {};
-          vm.runInNewContext(src.toString(), c);
-
-          assert.equal(c.require('whatever'), 'UPPERCASE app/a/a.js');
-
-          done();
-        });
+      run_test({
+        mods: [aliaser]
+      }, done);
     }
   );
 });
