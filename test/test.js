@@ -79,4 +79,17 @@ describe('Plugin', function () {
       }, done);
     }
   );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'whatever' via string, and apply programmatic transform.",
+    function (done) {
+      run_test({
+        mods: [pathmodify.mod.id(
+          'app/a/a',
+          path.join(paths.src, paths.a_rel),
+          'whatever'
+        )]
+      }, done);
+    }
+  );
 });
