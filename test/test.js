@@ -54,9 +54,9 @@ describe('Plugin', function () {
   }
   // aliaser
 
-  function run_test (opts, done) {
+  function run_test (plugin_opts, opts, done) {
     bify(bify_opts)
-      .plugin(pathmodify, opts)
+      .plugin(pathmodify, plugin_opts)
       .transform(function (file) { return new Xform; })
       .bundle(function (err, src) {
         if (err) throw err;
@@ -64,7 +64,7 @@ describe('Plugin', function () {
         var c = {};
         vm.runInNewContext(src.toString(), c);
 
-        assert.equal(c.require('whatever'), 'UPPERCASE app/a/a.js');
+        assert.equal(c.require(opts.require_id), 'UPPERCASE app/a/a.js');
 
         done();
       });
@@ -76,20 +76,21 @@ describe('Plugin', function () {
     function (done) {
       run_test({
         mods: [aliaser]
-      }, done);
+      }, {require_id: 'whatever'}, done);
     }
   );
 
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'whatever' via string, and apply programmatic transform.",
     function (done) {
+      var opts = {require_id: 'whatever'};
       run_test({
         mods: [pathmodify.mod.id(
           'app/a/a',
           path.join(paths.src, paths.a_rel),
-          'whatever'
+          opts.require_id
         )]
-      }, done);
+      }, opts, done);
     }
   );
 });
