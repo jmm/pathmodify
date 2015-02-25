@@ -8,14 +8,14 @@ var
   vm = require('vm'),
   b;
 
-function xform () {
+function Xform () {
   var self = this;
   rs.Transform.apply(self, arguments);
 };
 
-util.inherits(xform, rs.Transform);
+util.inherits(Xform, rs.Transform);
 
-xform.prototype._transform = function (chunk, enc, cb) {
+Xform.prototype._transform = function (chunk, enc, cb) {
   this.push(chunk.toString().replace("lowercase", "UPPERCASE"));
   cb();
 };
@@ -53,7 +53,7 @@ describe('Plugin', function () {
         .plugin(pathmodify, {
           mods: [aliaser]
         })
-        .transform(function (file) { return new xform; })
+        .transform(function (file) { return new Xform; })
         .bundle(function (err, src) {
           if (err) throw err;
 
