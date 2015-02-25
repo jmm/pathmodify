@@ -43,7 +43,7 @@ describe('Plugin', function () {
   // aliaser
 
   it(
-    "Should resolve 'app/a/a' as 'src/a/a.js', expose as 'whatever', and apply programmatic transform.",
+    "Should resolve 'app/a/a' as 'src/a/a.js' via function, expose as 'whatever', and apply programmatic transform.",
     function (done) {
       b = bify({
         entries: ['./src/entry'],
