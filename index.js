@@ -234,8 +234,8 @@ function aliaser () {
 }
 // aliaser
 
-function simple (from, to, type) {
-  return {from: from, to: to, type: type};
+function simple (from, to, expose, type) {
+  return {from: from, to: to, expose: expose, type: type};
 }
 // simple
 
@@ -251,8 +251,8 @@ plugin.mod = {};
     type = type_def[0],
     aliases = type_def[1];
 
-  plugin.mod[type] = function (from, to) {
-    return simple(from, to, type);
+  plugin.mod[type] = function (from, to, expose) {
+    return simple(from, to, expose, type);
   };
 
   if (Array.isArray(aliases)) {
