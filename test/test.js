@@ -21,21 +21,25 @@ Xform.prototype._transform = function (chunk, enc, cb) {
 };
 
 describe('Plugin', function () {
-  var bify_opts;
+  var
+    bify_opts,
+    paths = {};
 
   bify_opts =  {
     entries: ['./src/entry'],
     basedir: __dirname,
   };
 
+  paths.prefix = 'app/';
+  paths.src = path.join(__dirname, 'src');
+  paths.a_rel = 'a/a.js';
 
   function aliaser (input) {
     var
-      output = {},
-      prefix = 'app/';
+      output = {};
 
-    if (input.id.indexOf(prefix) === 0) {
-      output.id = path.join(__dirname, 'src', input.id.substr(prefix.length));
+    if (input.id.indexOf(paths.prefix) === 0) {
+      output.id = path.join(paths.src, input.id.substr(paths.prefix.length));
 
       if (input.opts && input.opts.filename) {
         output.id = './' + path.relative(
