@@ -8,6 +8,7 @@ var
   vm = require('vm'),
   b;
 
+// Transform stream to test programatic transforms.
 function Xform () {
   rs.Transform.apply(this, arguments);
 }
