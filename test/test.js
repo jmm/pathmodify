@@ -80,6 +80,20 @@ describe('Plugin', function () {
     }
   );
 
+   it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'app/a/a'};
+      run_test({
+        mods: [pathmodify.mod.id(
+          opts.require_id,
+          path.join(paths.src, paths.a_rel),
+          true
+        )]
+      }, opts, done);
+    }
+  );
+
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'whatever' via string, and apply programmatic transform.",
     function (done) {
