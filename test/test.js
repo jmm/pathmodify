@@ -80,7 +80,7 @@ describe('Plugin', function () {
     }
   );
 
-   it(
+  it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
     function (done) {
       var opts = {require_id: 'app/a/a'};
@@ -103,6 +103,30 @@ describe('Plugin', function () {
           'app/a/a',
           path.join(paths.src, paths.a_rel),
           opts.require_id
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'whatever' via function, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'whatever'};
+      run_test({
+        mods: [pathmodify.mod.id(
+          'app/a/a',
+          path.join(paths.src, paths.a_rel),
+          function (rec, alias) {
+            assert.notStrictEqual(rec, undefined);
+            assert.strictEqual(typeof rec.id, 'string');
+            assert.ok(rec.id.length > 0);
+
+            assert.notStrictEqual(alias, undefined);
+            assert.strictEqual(typeof alias.id, 'string');
+            assert.ok(alias.id.length > 0);
+
+            return opts.require_id;
+          }
         )]
       }, opts, done);
     }
