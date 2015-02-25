@@ -9,9 +9,8 @@ var
   b;
 
 function Xform () {
-  var self = this;
-  rs.Transform.apply(self, arguments);
-};
+  rs.Transform.apply(this, arguments);
+}
 
 util.inherits(Xform, rs.Transform);
 
