@@ -21,6 +21,13 @@ Xform.prototype._transform = function (chunk, enc, cb) {
 };
 
 describe('Plugin', function () {
+  var bify_opts;
+
+  bify_opts =  {
+    entries: ['./src/entry'],
+    basedir: __dirname,
+  };
+
 
   function aliaser (input) {
     var
@@ -46,10 +53,7 @@ describe('Plugin', function () {
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via function, expose as 'whatever', and apply programmatic transform.",
     function (done) {
-      b = bify({
-        entries: ['./src/entry'],
-        basedir: __dirname,
-      })
+      b = bify(bify_opts)
         .plugin(pathmodify, {
           mods: [aliaser]
         })
