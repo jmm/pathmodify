@@ -132,6 +132,28 @@ describe('Plugin', function () {
     }
   );
 
+   it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification with function replacement, expose as 'whatever' via string, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'whatever'};
+      run_test({
+        mods: [pathmodify.mod.id(
+          paths.require_id,
+          function (rec) {
+            assert.notStrictEqual(rec, undefined);
+            assert.strictEqual(typeof rec.id, 'string');
+            assert.ok(rec.id.length > 0);
+
+            return {id: tests_path.join(
+              paths.src, paths.subdir, paths.basename + paths.ext
+            )};
+          },
+          opts.require_id
+        )]
+      }, opts, done);
+    }
+  );
+
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'whatever' via function, and apply programmatic transform.",
     function (done) {
