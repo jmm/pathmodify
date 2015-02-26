@@ -155,4 +155,32 @@ describe('Plugin', function () {
       }, opts, done);
     }
   );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `dir` type modification, expose as 'whatever/a/a' via function, and apply programmatic transform.",
+    function (done) {
+      var
+        expose_prefix = 'whatever',
+        opts = {
+          require_id: tests_path.join(
+            expose_prefix,
+            paths.subdir,
+            paths.basename
+          ),
+        };
+
+      run_test({
+        mods: [pathmodify.mod.dir(
+          paths.prefix,
+          paths.src,
+          function (rec, alias) {
+            return tests_path.join(
+              expose_prefix,
+              rec.id.substr(paths.prefix.length)
+            );
+          }
+        )]
+      }, opts, done);
+    }
+  );
 });
