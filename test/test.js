@@ -6,7 +6,13 @@ var
   path = require('path'),
   assert = require('assert'),
   vm = require('vm'),
+  // Like core paths module, but tailored for the purposes of these tests.
+  tests_path = {},
   b;
+
+tests_path.join = function join () {
+  return path.join.apply(path, arguments).replace('\\', this.sep);
+};
 
 // Transform stream to test programatic transforms.
 function Xform () {
@@ -30,16 +36,29 @@ describe('Plugin', function () {
     basedir: __dirname,
   };
 
-  paths.prefix = 'app/';
-  paths.src = path.join(__dirname, 'src');
-  paths.a_rel = 'a/a.js';
+  paths.sep = '/';
+  tests_path.sep = paths.sep;
+
+  paths.src = tests_path.join(__dirname, 'src');
+  paths.prefix = 'app';
+  paths.subdir = 'a';
+  paths.basename = paths.subdir;
+  paths.ext = '.js';
+  paths.require_id = tests_path.join(
+    paths.prefix, paths.subdir, paths.basename
+  );
+
 
   function aliaser (input) {
     var
+      prefix = [paths.prefix, paths.sep].join(''),
       output = {};
 
-    if (input.id.indexOf(paths.prefix) === 0) {
-      output.id = path.join(paths.src, input.id.substr(paths.prefix.length));
+    if (input.id.indexOf(prefix) === 0) {
+      output.id = tests_path.join(
+        paths.src,
+        input.id.substr(prefix.length)
+      );
 
       if (input.opts && input.opts.filename) {
         output.id = './' + path.relative(
@@ -64,7 +83,10 @@ describe('Plugin', function () {
         var c = {};
         vm.runInNewContext(src.toString(), c);
 
-        assert.equal(c.require(opts.require_id), 'UPPERCASE app/a/a.js');
+        assert.equal(
+          c.require(opts.require_id),
+          'UPPERCASE ' + paths.require_id + paths.ext
+        );
 
         done();
       });
@@ -83,11 +105,13 @@ describe('Plugin', function () {
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
     function (done) {
-      var opts = {require_id: 'app/a/a'};
+      var opts = {
+        require_id: tests_path.join(paths.prefix, paths.subdir, paths.basename)
+      };
       run_test({
         mods: [pathmodify.mod.id(
           opts.require_id,
-          path.join(paths.src, paths.a_rel),
+          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
           true
         )]
       }, opts, done);
@@ -100,8 +124,8 @@ describe('Plugin', function () {
       var opts = {require_id: 'whatever'};
       run_test({
         mods: [pathmodify.mod.id(
-          'app/a/a',
-          path.join(paths.src, paths.a_rel),
+          paths.require_id,
+          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
           opts.require_id
         )]
       }, opts, done);
@@ -114,8 +138,8 @@ describe('Plugin', function () {
       var opts = {require_id: 'whatever'};
       run_test({
         mods: [pathmodify.mod.id(
-          'app/a/a',
-          path.join(paths.src, paths.a_rel),
+          paths.require_id,
+          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
           function (rec, alias) {
             assert.notStrictEqual(rec, undefined);
             assert.strictEqual(typeof rec.id, 'string');
