@@ -158,13 +158,13 @@ function make_resolver (opts) {
 
       if (
         (
-          modifier.type === 'd' &&
+          modifier.type === 'dir' &&
           rec.id.indexOf(modifier.from + path.sep) === 0
         )
 
         ||
 
-        (modifier.type === 'f' && rec.id === modifier.from)
+        (modifier.type === 'id' && rec.id === modifier.from)
       ) {
         if (typeof modifier.to === 'function') {
           temp = alias_with_func(modifier.to, rec);
@@ -237,8 +237,8 @@ function simple (from, to, expose, type) {
 plugin.mod = {};
 
 [
-  ['f', ['id', 'file']],
-  ['d', ['dir']],
+  ['id'],
+  ['dir'],
   ['re'],
 ].forEach(function (type_def) {
   var
