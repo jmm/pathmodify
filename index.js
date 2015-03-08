@@ -11,12 +11,14 @@ var
 function pathmodify (b, opts) {
   var
     deps = b.pipeline.get('deps'),
-    pack = b.pipeline.get('pack').get(0),
-    stream;
+    // TODO `0` needs to be changed to a label.
+    pack = b.pipeline.get('pack').get(0);
 
   opts = opts || {};
 
+  // TODO Should probably make sure this ends up directly after module-deps.
   deps.push(aliaser());
+  // TODO `0` needs to be changed to a label.
   deps = deps.get(0);
 
   opts.bify = b;
@@ -24,18 +26,10 @@ function pathmodify (b, opts) {
   opts.deps = deps;
   opts.resolver = deps.resolver;
 
-  // This is a hack to get browserify to export a require(). The alternative is
-  // to set b.pipeline.get('pack').get(0).hasExports = true when something is
-  // exposed. Pick your poison.
-  stream = rs.PassThrough();
-  stream.end(";");
-  b.require(stream);
-
   opts.expose = function expose (key, val) {
     b._expose[key] = val;
 
-    // This is the alternative to the dummy b.require() above.
-    // pack.hasExports = true;
+    pack.hasExports = true;
   };
   // expose
 
