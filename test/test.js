@@ -132,7 +132,7 @@ describe('Plugin', function () {
     }
   );
 
-   it(
+  it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification with function replacement, expose as 'whatever' via string, and apply programmatic transform.",
     function (done) {
       var opts = {require_id: 'whatever'};
@@ -179,6 +179,29 @@ describe('Plugin', function () {
   );
 
   it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `dir` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
+    function (done) {
+      var
+        expose_prefix = 'whatever',
+        opts = {
+          require_id: tests_path.join(
+            paths.prefix,
+            paths.subdir,
+            paths.basename
+          ),
+        };
+
+      run_test({
+        mods: [pathmodify.mod.dir(
+          paths.prefix,
+          paths.src,
+          true
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `dir` type modification, expose as 'whatever/a/a' via function, and apply programmatic transform.",
     function (done) {
       var
@@ -200,6 +223,115 @@ describe('Plugin', function () {
               expose_prefix,
               rec.id.substr(paths.prefix.length)
             );
+          }
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `dir` type modification with function replacement, expose as 'app/a/a' via bool, and apply programmatic transform.",
+    function (done) {
+      var
+        expose_prefix = 'whatever',
+        opts = {
+          require_id: tests_path.join(
+            paths.prefix,
+            paths.subdir,
+            paths.basename
+          ),
+        };
+
+      run_test({
+        mods: [pathmodify.mod.dir(
+          paths.prefix,
+          function (rec) {
+            assert.notStrictEqual(rec, undefined);
+            assert.strictEqual(typeof rec.id, 'string');
+            assert.ok(rec.id.length > 0);
+
+            return {id: tests_path.join(
+              paths.src, paths.subdir, paths.basename + paths.ext
+            )};
+          },
+          true
+        )]
+      }, opts, done);
+    }
+  );
+
+  var from_re = /^app\/(a\/a)$/;
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `re` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
+    function (done) {
+      var opts = {
+        require_id: tests_path.join(paths.prefix, paths.subdir, paths.basename)
+      };
+      run_test({
+        mods: [pathmodify.mod.re(
+          from_re,
+          tests_path.join(paths.src, '$1' + paths.ext),
+          true
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `re` type modification, expose as 'whatever' via string, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'whatever'};
+      run_test({
+        mods: [pathmodify.mod.re(
+          from_re,
+          tests_path.join(paths.src, '$1' + paths.ext),
+          opts.require_id
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `re` type modification with function replacement, expose as 'whatever' via string, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'whatever'};
+      run_test({
+        mods: [pathmodify.mod.re(
+          from_re,
+          function (rec, opts) {
+            assert.notStrictEqual(rec, undefined);
+            assert.strictEqual(typeof rec.id, 'string');
+            assert.ok(rec.id.length > 0);
+
+            return {id: tests_path.join(
+              paths.src, opts.matches[1] + paths.ext
+            )};
+          },
+          opts.require_id
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `re` type modification, expose as 'whatever' via function, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: 'whatever'};
+      run_test({
+        mods: [pathmodify.mod.re(
+          from_re,
+          tests_path.join(paths.src, '$1' + paths.ext),
+          function (rec, alias) {
+            assert.notStrictEqual(rec, undefined);
+            assert.strictEqual(typeof rec.id, 'string');
+            assert.ok(rec.id.length > 0);
+
+            assert.notStrictEqual(alias, undefined);
+            assert.strictEqual(typeof alias.id, 'string');
+            assert.ok(alias.id.length > 0);
+
+            return opts.require_id;
           }
         )]
       }, opts, done);
