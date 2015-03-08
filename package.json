@@ -31,9 +31,13 @@
   "scripts": {
     "test": "mocha test/*.js"
   },
+  "dependencies": {
+    "readable-stream": "1.x"
+  },
   "devDependencies": {
     "mocha": "2.x",
-    "browserify": ">=5.1.0"
+    "browserify": ">=5.1.0",
+    "readable-stream": "1.x"
   },
   "peerDependencies": {
     "browserify": ">=5.1.0"

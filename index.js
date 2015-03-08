@@ -1,6 +1,6 @@
 var
   path = require('path'),
-  rs = require('browserify/node_modules/readable-stream'),
+  rs = require('readable-stream'),
   // Map resolved pathnames to expose IDs.
   mappings = {},
   plugin;

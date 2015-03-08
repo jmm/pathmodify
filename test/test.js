@@ -1,6 +1,6 @@
 var
   bify = require('browserify'),
-  rs = require('browserify/node_modules/readable-stream'),
+  rs = require('readable-stream'),
   util = require('util'),
   pathmodify = require('../'),
   path = require('path'),
