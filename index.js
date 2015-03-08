@@ -3,7 +3,9 @@ var
   rs = require('readable-stream'),
   // Map resolved pathnames to expose IDs.
   mappings = {},
-  plugin;
+  plugin = pathmodify;
+
+module.exports = plugin;
 
 /**
  * Main plugin.
@@ -36,8 +38,6 @@ function pathmodify (b, opts) {
   deps.resolver = make_resolver(opts);
 }
 // pathmodify
-
-plugin = pathmodify;
 
 /**
  * Make a custom resolve function to override module-deps resolver.
@@ -255,5 +255,3 @@ plugin.mod = {};
     });
   }
 });
-
-module.exports = plugin;
