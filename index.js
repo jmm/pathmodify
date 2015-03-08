@@ -132,9 +132,9 @@ function make_resolver (opts) {
    * Process a modification that's a function or where the replacement is a
    * function.
    */
-  function alias_with_func (f, rec) {
-    var ret = {};
-    ret.alias = f(rec);
+  function alias_with_func (f, rec, opts) {
+    var ret = {}, opts = opts || {};
+    ret.alias = f(rec, opts);
     ret.matched = ret.alias.id !== rec.id;
     return ret;
   }
