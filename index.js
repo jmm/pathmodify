@@ -183,9 +183,19 @@ function make_resolver (opts) {
       }
 
       else if (
-        modifier.type === 're' && (matched = modifier.from.test(rec.id))
+        modifier.type === 're' &&
+        (matched = modifier.from[
+          typeof modifier.to === 'function' ? 'exec' : 'test'
+        ](rec.id))
       ) {
-        alias.id = rec.id.replace(modifier.from, modifier.to);
+        if (typeof modifier.to === 'function') {
+          temp = alias_with_func(modifier.to, rec, {matches: matched});
+          alias = temp.alias;
+          matched = temp.matched;
+        }
+        else {
+          alias.id = rec.id.replace(modifier.from, modifier.to);
+        }
       }
 
       else matched = false;
