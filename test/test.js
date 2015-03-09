@@ -48,7 +48,6 @@ describe('Plugin', function () {
     paths.prefix, paths.subdir, paths.basename
   );
 
-
   function aliaser (input) {
     var
       prefix = [paths.prefix, paths.sep].join(''),
