@@ -83,10 +83,12 @@ describe('Plugin', function () {
         var c = {};
         vm.runInNewContext(src.toString(), c);
 
-        assert.equal(
-          c.require(opts.require_id),
-          'UPPERCASE ' + paths.require_id + paths.ext
-        );
+        if (opts.require_id) {
+          assert.equal(
+            c.require(opts.require_id),
+            'UPPERCASE ' + paths.require_id + paths.ext
+          );
+        }
 
         done();
       });
