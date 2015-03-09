@@ -159,6 +159,9 @@ function make_resolver (opts) {
     modifiers.every(function (modifier) {
       matched = true;
 
+      // Reset so modifiers can't munge data for later ones.
+      rec.id = id;
+
       if (
         (
           modifier.type === 'dir' &&
