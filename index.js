@@ -1,9 +1,13 @@
 var
   path = require('path'),
   rs = require('readable-stream'),
-  plugin = pathmodify;
+  plugin;
 
-module.exports = plugin;
+plugin = (function (plugin) {
+  return module.exports = function pathmodify () {
+    return plugin;
+  };
+})(pathmodify);
 
 /**
  * Main plugin.

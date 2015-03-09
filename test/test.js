@@ -74,7 +74,7 @@ describe('Plugin', function () {
 
   function run_test (plugin_opts, opts, done) {
     bify(bify_opts)
-      .plugin(pathmodify, plugin_opts)
+      .plugin(pathmodify(), plugin_opts)
       .transform(function (file) { return new Xform; })
       .bundle(function (err, src) {
         if (err) throw err;
