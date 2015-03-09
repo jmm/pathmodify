@@ -1,8 +1,22 @@
-This is a [browserify](https://github.com/substack/node-browserify) plugin that's meant to do the same kind of thing as [aliasify](https://github.com/benbria/aliasify) and [remapify](https://github.com/joeybaker/remapify), but in a more elegant, powerful way. This is very experimental right now, a proof of concept. It's only been tested by [me](https://github.com/jmm) so far. If it seems like people are interested I may pursue it further.
+This is a [browserify](https://github.com/substack/node-browserify) plugin that's meant to do the same kind of thing as [aliasify](https://github.com/benbria/aliasify) and [remapify](https://github.com/joeybaker/remapify), but in a more elegant, powerful way. This hasn't been tested extensively yet, so consider it experimental. But some of the other alternatives already in common use don't really even work, so....
+
+# Installation & Quick Summary
+`npm install pathmodify`
+
+    var pathmodify = require('pathmodify');
+
+    browserify()
+      .plugin(pathmodify(), {mods: [
+        // Make code like `require('app/something')` act like
+        // `require('/somedir/src/something')`
+        pathmodify.mod.dir('app', '/somedir/src')
+      ]})
 
 # Purpose
 
-In a nutshell, rewrite (AKA alias, map) `require()` IDs / paths to different values. E.g. rewrite `require('app/model/something')` to a relative path, e.g. `./model/something`. The point is to avoid having to use cumbersome relative paths (e.g. `./` and `../`) throughout your browserified application, and still be able to apply transforms programatically, e.g. `browserify().transform(something)`. This can be used to alias entire directories or any specific ID strings passed to `require()`, and the rewriting can be dependent on the path of the requiring file as well.
+Avoid having to use cumbersome relative paths (`../../../../../../..`) in your browserified application, and still be able to apply transforms programatically: `browserify().transform(something)`.
+
+This plugin allows you to rewrite (AKA alias, map) `require()` IDs / paths to different values. For example, rewrite `require('app/model/something')` to a relative path like `./model/something`. This can be used to alias entire directories or any specific modules / ID string passed to `require()`, and the rewriting can be dependent on the path of the requiring file as well.
 
 Say you have a directory structure like...
 
@@ -15,11 +29,11 @@ Say you have a directory structure like...
             +-- subsubdir/
                 +-- something.js
 
-`something.js`
+...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured. And say you don't want to store the application files you're going to browserify in `node_modules` or symlink them there because it will break programmatic application of transforms (`browserify().transform(whatever)`). (But, see below -- you can combine this tool with symlinking to get the best of both worlds.)
+
+pathmodify allows you to `require()` files like `somedir/src/model/whatever.js` from anywhere in the dependency graph without using `./` or `../` relative paths, enabing a `something.js` like this for example:
 
     require('app/model/whatever');
-
-...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured and you want to be able to `require()` `somedir/src/model/whatever.js` or `somedir/src/...` from anywhere in the dependency graph without using `./` / `../` relative paths. You also don't want to store the files or symlink to them under `node_modules` because it will break programmatic application of transforms (e.g. `browserify('./src/entry').transform(whatever)`). (But, see below -- you can combine this tool with symlinking to get the best of both worlds.)
 
 # Example usage
     var
@@ -27,15 +41,31 @@ Say you have a directory structure like...
       pathmodify = require('pathmodify');
 
     var opts = {
-      // Feel free to think of 'mods' as referring to either modifications or
-      // module IDs that are being altered.
+      // Feel free to think of `mods` as referring to either modifications or
+      // module IDs that are being altered. It is an array of possible
+      // modifications to apply to the values passed to `require()` calls in the
+      // browserified code. `mods` will be iterated until an entry is
+      // encountered that alters the `id` of the `require()` call being
+      // processed.
       mods: [
+        // `id` type (exact match)
+        pathmodify.mod.id('jquery', '/somedir/jquery.js'),
+
+        // `dir` type (directory prefix)
+        pathmodify.mod.dir('app', '/somedir/src'),
+
+        // 're' type (regular expression)
+        pathmodify.mod.re(/(.*\.)abc$/, '$1.xyz'),
+
+        // Function
         function (rec) {
           var alias = {};
 
           var prefix = 'app' + path.sep;
           if (rec.id.indexOf(prefix) === 0) {
-            alias.id = path.join(__dirname, 'src', rec.id.substr(prefix));
+            alias.id = path.join(
+              __dirname, 'src', rec.id.substr(prefix.length)
+            );
           }
 
           return alias;
@@ -44,9 +74,9 @@ Say you have a directory structure like...
     };
 
     browserify('./src/entry')
-      .plugin(pathmodify, opts)
+      .plugin(pathmodify(), opts)
 
-The structure of the members of the `mods` array is a work in progress. But suffice it to say that for the time being you can pass a function that will receive an object like this:
+When the mod is a function it will receive an object like this:
 
     {
       // The string passed to `require()`
@@ -61,8 +91,8 @@ The structure of the members of the `mods` array is a work in progress. But suff
 It should leave the passed object alone and return an object like this if the `id` should be aliased to something else:
 
     {
-      // The path / id that should be resolved (e.g. argument to
-      // node-browser-resolve)
+      // The path / id that should be resolved (as if the `require()` call
+      // contained this value).
       id: '...',
 
       // Optional name to expose the module as (like
@@ -70,13 +100,19 @@ It should leave the passed object alone and return an object like this if the `i
       expose: '...'
     }
 
-If you don't want to alias the `id` to something else, return anything else (or nothing).
+If you don't want to alias the `id` to something else, don't return anything.
 
 # node_modules
 
-As alluded to earlier, ordinarily you could store or symlink your application as something like `node_modules/app` and require its files from node like `require('app/something/whatever')`. But if you do that in browserify you lose the ability to apply transforms like:
+As alluded to earlier, ordinarily you could store or symlink your application as something like `node_modules/app` and require its files from node like `require('app/something/whatever')`. But if you do that in browserify you lose the ability to apply transforms programatically, like:
 
     browserify('./entry')
       .transform(some_transform)
 
-With this plugin you can get the best of both worlds by symlinking your application under `node_modules` and get the normal resolution behavior in node, and use the same paths in browserify by rewriting them to absolute paths (outside of `node_modules`) or paths relative to the requiring file. So if you have say `/somedir/src` synlinked as `node_modules/app`, configure this plugin and point browserify at entry files under `src`.
+With this plugin you can get the best of both worlds by symlinking your application under `node_modules` and get the normal resolution behavior in node, and use the same paths in browserify by rewriting them to absolute paths (outside of `node_modules`) or paths relative to the requiring file. So if you have say `/somedir/src` synlinked as `node_modules/app`, you can use pathmodify like this:
+
+    // Point browserify to `./src/...`, not `app/...`
+    browserify('./src/entry')
+      .plugin(pathmodify(), {mods: [
+        pathmodify.mod.dir('app', path.join(__dirname, 'src'))
+      ]})
