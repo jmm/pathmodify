@@ -1,8 +1,6 @@
 var
   path = require('path'),
   rs = require('readable-stream'),
-  // Map resolved pathnames to expose IDs.
-  mappings = {},
   plugin = pathmodify;
 
 module.exports = plugin;
@@ -14,12 +12,16 @@ function pathmodify (b, opts) {
   var
     deps = b.pipeline.get('deps'),
     // TODO `0` needs to be changed to a label.
-    pack = b.pipeline.get('pack').get(0);
+    pack = b.pipeline.get('pack').get(0),
+    // Map resolved pathnames to expose IDs.
+    mappings = {};
 
   opts = opts || {};
 
+  opts.mappings = mappings;
+
   // TODO Should probably make sure this ends up directly after module-deps.
-  deps.push(aliaser());
+  deps.push(aliaser({mappings: mappings}));
   // TODO `0` needs to be changed to a label.
   deps = deps.get(0);
 
@@ -49,7 +51,8 @@ function make_resolver (opts) {
     expose = opts.expose,
     modifiers = Array.isArray(opts.mods) ? opts.mods : [],
     visited = {},
-    bify = opts.bify;
+    bify = opts.bify,
+    mappings = opts.mappings;
 
   return alias_resolver;
 
@@ -218,8 +221,11 @@ function make_resolver (opts) {
 /**
  * Following module-deps, update record id's to reflect exposure configuration.
  */
-function aliaser () {
-  var stream = new rs.Transform({objectMode: true});
+function aliaser (opts) {
+  opts = opts || {};
+  var
+    stream = new rs.Transform({objectMode: true}),
+    mappings = opts.mappings;
 
   stream._transform = write;
 
