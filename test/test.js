@@ -339,4 +339,25 @@ describe('Plugin', function () {
       }, opts, done);
     }
   );
+
+  it(
+    "Should reset `rec` props for each iteration of the mods loop.",
+    function (done) {
+      var opts = {};
+      run_test({
+        mods: [
+          function (rec, opts) {
+            rec.id = 'bogus';
+          },
+          pathmodify.mod.id(paths.require_id, function (rec) {
+            assert.strictEqual(rec.id, paths.require_id);
+
+            return {id: tests_path.join(
+              paths.src, paths.subdir, paths.basename + paths.ext
+            )};
+          })
+        ]
+      }, opts, done);
+    }
+  );
 });
