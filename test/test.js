@@ -359,4 +359,25 @@ describe('Plugin', function () {
       }, opts, done);
     }
   );
+
+  it(
+    "Should iterate mods loop until an alias is emitted.",
+    function (done) {
+      var
+        opts = {},
+        i = 0;
+      run_test({
+        mods: [
+          // Matches from but doesn't modify so shouldn't terminate loop.
+          pathmodify.mod.re(from_re, function (rec) {}),
+
+          // Should be iterated to and emit alias.
+          pathmodify.mod.re(
+            from_re,
+            tests_path.join(paths.src, '$1' + paths.ext)
+          )
+        ]
+      }, opts, done);
+    }
+  );
 });
