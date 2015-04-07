@@ -216,8 +216,8 @@ function make_resolver (opts) {
     });
 
     rec.id = id;
+    if (! (alias && alias.id)) alias = {};
     rec.alias = alias;
-    if (! (rec.alias && rec.alias.id)) rec.alias = {};
 
     return rec;
   }
