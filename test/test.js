@@ -381,4 +381,28 @@ describe('Plugin', function () {
       }, opts, done);
     }
   );
+
+  it(
+    "Should call user mod functions in context of mod.",
+    function (done) {
+      var
+        opts = {},
+        i = 0;
+
+      run_test({
+        mods: [
+          pathmodify.mod.id(paths.require_id, function (rec) {
+            assert.strictEqual(this.from, paths.require_id);
+          }),
+
+          function mod () {
+            assert.strictEqual(this, mod);
+          },
+
+          // Update ID so test doesn't fail for that
+          pathmodify.mod.id(paths.require_id, paths.alias_id)
+        ]
+      }, opts, done);
+    }
+  );
 });
