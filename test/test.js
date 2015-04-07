@@ -47,6 +47,7 @@ describe('Plugin', function () {
   paths.require_id = tests_path.join(
     paths.prefix, paths.subdir, paths.basename
   );
+  paths.alias_id = tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext);
 
   function aliaser (input) {
     var
@@ -112,7 +113,7 @@ describe('Plugin', function () {
       run_test({
         mods: [pathmodify.mod.id(
           opts.require_id,
-          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
+          paths.alias_id,
           true
         )]
       }, opts, done);
@@ -126,7 +127,7 @@ describe('Plugin', function () {
       run_test({
         mods: [pathmodify.mod.id(
           paths.require_id,
-          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
+          paths.alias_id,
           opts.require_id
         )]
       }, opts, done);
@@ -162,7 +163,7 @@ describe('Plugin', function () {
       run_test({
         mods: [pathmodify.mod.id(
           paths.require_id,
-          tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext),
+          paths.alias_id,
           function (rec, alias) {
             assert.notStrictEqual(rec, undefined);
             assert.strictEqual(typeof rec.id, 'string');

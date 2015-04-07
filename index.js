@@ -141,7 +141,7 @@ function make_resolver (opts) {
    */
   function alias_with_func (f, rec, opts) {
     var ret = {}, opts = opts || {};
-    ret.alias = f(rec, opts);
+    ret.alias = f.call(f, rec, opts);
     ret.matched = !! (ret.alias && ret.alias.id !== rec.id);
     return ret;
   }
