@@ -139,9 +139,9 @@ function make_resolver (opts) {
    * Process a modification that's a function or where the replacement is a
    * function.
    */
-  function alias_with_func (f, rec, opts) {
+  function alias_with_func (mod, rec, opts) {
     var ret = {}, opts = opts || {};
-    ret.alias = f.call(f, rec, opts);
+    ret.alias = (typeof mod === 'function' ? mod : mod.to).call(mod, rec, opts);
     ret.matched = !! (ret.alias && ret.alias.id !== rec.id);
     return ret;
   }
@@ -178,7 +178,7 @@ function make_resolver (opts) {
         (modifier.type === 'id' && rec.id === modifier.from)
       ) {
         if (typeof modifier.to === 'function') {
-          temp = alias_with_func(modifier.to, rec);
+          temp = alias_with_func(modifier, rec);
           alias = temp.alias;
           matched = temp.matched;
         }
@@ -200,7 +200,7 @@ function make_resolver (opts) {
         ](rec.id))
       ) {
         if (typeof modifier.to === 'function') {
-          temp = alias_with_func(modifier.to, rec, {matches: matched});
+          temp = alias_with_func(modifier, rec, {matches: matched});
           alias = temp.alias;
           matched = temp.matched;
         }
