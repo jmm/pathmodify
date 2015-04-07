@@ -157,7 +157,7 @@ function make_resolver (opts) {
       matched,
       // Restore this in the end in case the user modifies it.
       id = rec.id,
-      alias = {},
+      alias,
       temp = {};
 
     modifiers.every(function (modifier) {
@@ -165,6 +165,7 @@ function make_resolver (opts) {
 
       // Reset so modifiers can't munge data for later ones.
       rec.id = id;
+      alias = {};
 
       if (
         (
