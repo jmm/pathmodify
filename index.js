@@ -17,6 +17,8 @@ function pathmodify (b, opts) {
 
   // Map resolved pathnames to expose IDs.
   opts.mappings = {};
+
+  // Record of already processed require() ID's, keyed on parent filename.
   opts.visited = {};
 
   opts.bify = b;
@@ -88,7 +90,6 @@ function make_resolver (opts) {
       resolver = current('resolver'),
       mappings = current('mappings'),
       visited = current('visited'),
-      // Record of already processed require() ID's, keyed on parent filename.
       par_vis = visited[opts.filename] || {},
       // boolean Whether the id has already been processed.
       processed;
