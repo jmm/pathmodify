@@ -269,6 +269,8 @@ function aliaser (opts) {
   }
   // write
 
+  stream.label = "pathmodify:deps:post";
+
   return stream;
 }
 // aliaser
