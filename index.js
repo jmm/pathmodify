@@ -13,50 +13,68 @@ plugin = (function (plugin) {
  * Main plugin.
  */
 function pathmodify (b, opts) {
-  var
-    deps = b.pipeline.get('deps'),
-    // TODO `0` needs to be changed to a label.
-    pack = b.pipeline.get('pack').get(0),
-    // Map resolved pathnames to expose IDs.
-    mappings = {};
-
   opts = opts || {};
 
-  opts.mappings = mappings;
-
-  // TODO Should probably make sure this ends up directly after module-deps.
-  deps.push(aliaser({mappings: mappings}));
-  // TODO `0` needs to be changed to a label.
-  deps = deps.get(0);
+  // Map resolved pathnames to expose IDs.
+  opts.mappings = {};
+  opts.visited = {};
 
   opts.bify = b;
 
-  opts.deps = deps;
-  opts.resolver = deps.resolver;
-
   opts.expose = function expose (key, val) {
     b._expose[key] = val;
-
-    pack.hasExports = true;
+    opts.pack.hasExports = true;
   };
   // expose
 
-  deps.resolver = make_resolver(opts);
+  opts.custom_resolver = make_resolver(opts);
+
+  b.on('reset', function () {
+    init(opts);
+  });
+  init(opts);
 }
 // pathmodify
+
+/**
+ * Common logic between initial setup and bundle reset.
+ */
+function init (opts) {
+  var
+    b = opts.bify,
+    deps = b.pipeline.get('deps');
+
+  // TODO `0` needs to be changed to a label.
+  opts.pack = b.pipeline.get('pack').get(0);
+
+  // TODO Should probably make sure this ends up directly after module-deps.
+  deps.push(aliaser({mappings: opts.mappings}));
+
+  // TODO `0` needs to be changed to a label.
+  deps = deps.get(0);
+  opts.deps = deps;
+
+  opts.resolver = deps.resolver;
+  deps.resolver = opts.custom_resolver;
+}
+// init
 
 /**
  * Make a custom resolve function to override module-deps resolver.
  */
 function make_resolver (opts) {
   var
-    resolver = opts.resolver,
-    walk = opts.deps.walk.bind(opts.deps),
     expose = opts.expose,
     modifiers = Array.isArray(opts.mods) ? opts.mods : [],
-    visited = {},
-    bify = opts.bify,
-    mappings = opts.mappings;
+    mappings = opts.mappings,
+    visited = opts.visited,
+    bify = opts.bify;
+
+  // These change at reset: resolve
+  function current (prop) {
+    return opts[prop];
+  }
+  // current
 
   return alias_resolver;
 
@@ -67,6 +85,9 @@ function make_resolver (opts) {
   function alias_resolver (id, opts, cb) {
     var
       rec = {id: id, opts: {filename: opts.filename}},
+      resolver = current('resolver'),
+      mappings = current('mappings'),
+      visited = current('visited'),
       // Record of already processed require() ID's, keyed on parent filename.
       par_vis = visited[opts.filename] || {},
       // boolean Whether the id has already been processed.
@@ -94,7 +115,7 @@ function make_resolver (opts) {
       ! processed &&
       rec.alias.expose
     ) {
-      return walk({
+      return opts.deps.walk({
         id: rec.alias.expose || rec.id,
         file: rec.id,
       }, opts, cb);
