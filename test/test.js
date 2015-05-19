@@ -107,9 +107,7 @@ describe('Plugin', function () {
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
     function (done) {
-      var opts = {
-        require_id: tests_path.join(paths.prefix, paths.subdir, paths.basename)
-      };
+      var opts = {require_id: paths.require_id};
       run_test({
         mods: [pathmodify.mod.id(
           opts.require_id,
@@ -267,9 +265,7 @@ describe('Plugin', function () {
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via `re` type modification, expose as 'app/a/a' via bool, and apply programmatic transform.",
     function (done) {
-      var opts = {
-        require_id: tests_path.join(paths.prefix, paths.subdir, paths.basename)
-      };
+      var opts = {require_id: paths.require_id};
       run_test({
         mods: [pathmodify.mod.re(
           from_re,
