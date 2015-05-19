@@ -337,6 +337,22 @@ describe('Plugin', function () {
   );
 
   it(
+    "Should resolve 'app/a/a' as 'src/a/a.js' via `id` type modification, expose as 'app/a/a' via function returning bool, and apply programmatic transform.",
+    function (done) {
+      var opts = {require_id: paths.require_id};
+      run_test({
+        mods: [pathmodify.mod.id(
+          paths.require_id,
+          paths.alias_id,
+          function (rec, alias) {
+            return true;
+          }
+        )]
+      }, opts, done);
+    }
+  );
+
+  it(
     "Should reset `rec` props for each iteration of the mods loop.",
     function (done) {
       var opts = {};
