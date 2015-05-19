@@ -143,14 +143,15 @@ function make_resolver (opts) {
    * Process exposure configuration.
    */
   function set_expose (rec, alias, modifier) {
-    if (modifier.expose === true) {
-      alias.expose = rec.id;
-    }
-    else if (typeof modifier.expose === 'string') {
+    if (typeof modifier.expose === 'string') {
       alias.expose = modifier.expose;
     }
     else if (typeof modifier.expose === 'function') {
       alias.expose = modifier.expose(rec, alias);
+    }
+
+    if (modifier.expose === true || alias.expose === true) {
+      alias.expose = rec.id;
     }
 
     return alias;
