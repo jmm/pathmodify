@@ -1,7 +1,8 @@
 var
   path = require('path'),
   rs = require('readable-stream'),
-  plugin;
+  plugin,
+  slash = {fwd: '/', back: '\\'};
 
 plugin = (function (plugin) {
   return module.exports = function pathmodify () {
@@ -181,7 +182,14 @@ function make_resolver (opts) {
       // Restore this in the end in case the user modifies it.
       id = rec.id,
       alias,
-      temp = {};
+      temp = {},
+      path_sep;
+
+    // Heuristically detect path separator.
+    [slash.fwd, slash.back, slash.fwd].every(function (sep) {
+      path_sep = sep;
+      return rec.id.indexOf(path_sep) === -1;
+    });
 
     modifiers.every(function (modifier) {
       matched = true;
@@ -193,7 +201,7 @@ function make_resolver (opts) {
       if (
         (
           modifier.type === 'dir' &&
-          rec.id.indexOf(modifier.from + path.sep) === 0
+          rec.id.indexOf(modifier.from + path_sep) === 0
         )
 
         ||
