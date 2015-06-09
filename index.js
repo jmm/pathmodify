@@ -1,5 +1,4 @@
 var
-  path = require('path'),
   rs = require('readable-stream'),
   plugin,
   slash = {fwd: '/', back: '\\'};
