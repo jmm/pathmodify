@@ -30,13 +30,14 @@
     "exposure"
   ],
   "scripts": {
-    "test": "mocha test/*.js"
+    "test": "istanbul cover _mocha test/*.js"
   },
   "dependencies": {
     "readable-stream": "1.x"
   },
   "devDependencies": {
     "browserify": ">=5.1.0",
+    "istanbul": "0.4.0",
     "mocha": "2.x",
     "object-assign": "^4.0.0",
     "readable-stream": "1.x",
