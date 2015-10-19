@@ -49,30 +49,10 @@ describe('Plugin', function () {
   );
   paths.alias_id = tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext);
 
-  function aliaser (input) {
-    var
-      prefix = [paths.prefix, paths.sep].join(''),
-      output = {};
-
-    if (input.id.indexOf(prefix) === 0) {
-      output.id = tests_path.join(
-        paths.src,
-        input.id.substr(prefix.length)
-      );
-
-      if (input.opts && input.opts.filename) {
-        output.id = './' + path.relative(
-          path.dirname(input.opts.filename),
-          output.id
         );
       }
 
-      output.expose = "whatever";
-    }
-    return output;
   }
-  // aliaser
-
   function run_test (plugin_opts, opts, done) {
     bify(bify_opts)
       .plugin(pathmodify(), plugin_opts)
@@ -98,6 +78,30 @@ describe('Plugin', function () {
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via function, expose as 'whatever', and apply programmatic transform.",
     function (done) {
+      function aliaser (input) {
+        var
+          prefix = [paths.prefix, paths.sep].join(''),
+          output = {};
+
+        if (input.id.indexOf(prefix) === 0) {
+          output.id = tests_path.join(
+            paths.src,
+            input.id.substr(prefix.length)
+          );
+
+          if (input.opts && input.opts.filename) {
+            output.id = './' + path.relative(
+              path.dirname(input.opts.filename),
+              output.id
+            );
+          }
+
+          output.expose = "whatever";
+        }
+        return output;
+      }
+      // aliaser
+
       run_test({
         mods: [aliaser]
       }, {require_id: 'whatever'}, done);
