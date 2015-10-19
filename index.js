@@ -108,19 +108,20 @@ function make_resolver (opts) {
     if (! processed) par_vis[rec.id] = rec;
 
     // Calling walk() is the alternative to pushing the pipeline step (as
-    // above). Currently unused.
+    // above). Currently unused. Would look like this:
 
-    // Aliased, exposed, and not previously visited.
-    if (
-      false &&
-      ! processed &&
-      rec.alias.expose
-    ) {
-      return opts.deps.walk({
-        id: rec.alias.expose || rec.id,
-        file: rec.id,
-      }, opts, cb);
-    }
+    /*
+      // Aliased, exposed, and not previously visited.
+      if (
+        ! processed &&
+        rec.alias.expose
+      ) {
+        return opts.deps.walk({
+          id: rec.alias.expose || rec.id,
+          file: rec.id,
+        }, opts, cb);
+      }
+    */
 
     // Delegate to original resolver.
     return resolver(rec.alias.id || rec.id, opts, function (err, res, pkg) {
