@@ -5,6 +5,8 @@ var
   pathmodify = require('../'),
   path = require('path'),
   assert = require('assert'),
+  sinon = require('sinon'),
+  assign = Object.assign || require('object-assign'),
   vm = require('vm'),
   // Like core paths module, but tailored for the purposes of these tests.
   tests_path = {},

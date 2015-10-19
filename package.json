@@ -38,7 +38,9 @@
   "devDependencies": {
     "mocha": "2.x",
     "browserify": ">=5.1.0",
-    "readable-stream": "1.x"
+    "readable-stream": "1.x",
+    "object-assign": "^4.0.0",
+    "sinon": "^1.17.0"
   },
   "peerDependencies": {
     "browserify": ">=5.1.0"
