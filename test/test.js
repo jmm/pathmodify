@@ -453,4 +453,79 @@ describe('Plugin', function () {
       }, opts, done);
     }
   );
+
+  it(
+    "Should work on rebundle.",
+    function (done) {
+      var
+        opts = {},
+        i = 0,
+        module_count = 0,
+        bundle_cb,
+        bundle_times = 2,
+        bundles_pending = bundle_times;
+
+      var mod_funcs = {
+        id: sinon.spy(function (rec) {
+          assert(
+            this.from === paths.require_id,
+            "from should equal: " + paths.require_id
+          );
+        }),
+
+        custom: sinon.spy(function mod () {
+          assert(this === mod_funcs.custom);
+        }),
+      };
+
+      var b = make_bundler({
+        browserify: options.browserify,
+        plugin: {
+          mods: [
+            pathmodify.mod.id(paths.require_id, mod_funcs.id),
+            mod_funcs.custom,
+            // Update ID so test doesn't fail for that
+            pathmodify.mod.id(paths.require_id, paths.alias_id)
+          ]
+        },
+      });
+
+      function module_counter () {
+        ++module_count;
+      }
+
+      // Count number of modules (entry files + require()'s) for the first
+      // bundle. This will establish how many times some of the aliasing
+      // functions should be called.
+      b.on('file', module_counter);
+
+      bundle_cb = make_bundle_cb(
+        opts,
+        function (err) {
+          b.removeListener('file', module_counter);
+          if (! --bundles_pending || err) {
+            if (! err) {
+              // Should only be invoked once, for the require('app/a/a') in
+              // entry.
+              assert(
+                mod_funcs.id.callCount === 1,
+                "`id` mod should've been called once"
+              );
+
+              // Should be invokved once per module (as it'll match everything
+              // and change nothing).
+              assert(
+                mod_funcs.custom.callCount === module_count,
+                "custom mod func should've been called once per module: " + module_count
+              );
+            }
+            return done(err);
+          }
+          else b.bundle(bundle_cb);
+        }
+      );
+
+      b.bundle(bundle_cb);
+    }
+  );
 });
