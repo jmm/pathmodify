@@ -28,10 +28,10 @@ Xform.prototype._transform = function (chunk, enc, cb) {
 
 describe('Plugin', function () {
   var
-    bify_opts,
+    options = {},
     paths = {};
 
-  bify_opts =  {
+  options.browserify = {
     entries: ['./src/entry'],
     basedir: __dirname,
   };
@@ -49,29 +49,59 @@ describe('Plugin', function () {
   );
   paths.alias_id = tests_path.join(paths.src, paths.subdir, paths.basename + paths.ext);
 
+  /**
+   * Make a browserify instance with a certain configuration.
+   * This config will work for a bunch of tests.
+   */
+  function make_bundler (opts) {
+    opts = opts || {};
+
+    return bify(opts.browserify)
+      .plugin(pathmodify(), opts.plugin)
+      .transform(function (file) { return new Xform; })
+    ;
+  }
+  // make_bundler
+
+  /**
+   * Make callback for b.bundle().
+   * This callback will work for a bunch of tests.
+   * @param object Opts options
+   * @param function|undefined done Test framework callback.
+   * @return function
+   */
+  function make_bundle_cb (opts, done) {
+    return function (err, src) {
+      if (err) return done(err);
+
+      var c = {};
+      vm.runInNewContext(src.toString(), c);
+
+      if (opts.require_id) {
+        assert.equal(
+          c.require(opts.require_id),
+          'UPPERCASE ' + paths.require_id + paths.ext
         );
       }
 
+      if (done) done();
+    };
   }
+  // make_bundle_cb
+
+  /**
+   * Run the "standard" test.
+   * This can be reused as the bulk of many of the tests.
+   * @param object plugin_opts Pathmodify options.
+   * @param object opts Test options.
+   * @param function done Test framework callback.
+   */
   function run_test (plugin_opts, opts, done) {
-    bify(bify_opts)
-      .plugin(pathmodify(), plugin_opts)
-      .transform(function (file) { return new Xform; })
-      .bundle(function (err, src) {
-        if (err) throw err;
-
-        var c = {};
-        vm.runInNewContext(src.toString(), c);
-
-        if (opts.require_id) {
-          assert.equal(
-            c.require(opts.require_id),
-            'UPPERCASE ' + paths.require_id + paths.ext
-          );
-        }
-
-        done();
-      });
+    make_bundler({
+      browserify: options.browserify,
+      plugin: plugin_opts,
+    })
+      .bundle(make_bundle_cb(opts, done));
   }
   // run_test
 
