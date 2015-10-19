@@ -113,6 +113,25 @@ describe('Plugin', function () {
   }
   // run_test
 
+  // This test exists partly for the sake of increased code coverage, but it
+  // doesn't get all the way there because browserify currently calls plugins
+  // with a default empty options object if one wasn't passed. It's not
+  // documented though, so the plugin does that itself too and that can't be
+  // covered.
+  it(
+    "Shouldn't error with no options passed",
+    function (done) {
+      run_test({
+        browserify: assign({}, options.browserify, {
+          // Dummy entry with no aliased require()'s.
+          entries: [(new rs.PassThrough).end(";")]
+        }),
+        test: {require_id: null},
+        done: done,
+      });
+    }
+  );
+
   it(
     "Should resolve 'app/a/a' as 'src/a/a.js' via function, expose as 'whatever', and apply programmatic transform.",
     function (done) {
