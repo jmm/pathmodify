@@ -36,10 +36,10 @@
     "readable-stream": "1.x"
   },
   "devDependencies": {
-    "mocha": "2.x",
     "browserify": ">=5.1.0",
-    "readable-stream": "1.x",
+    "mocha": "2.x",
     "object-assign": "^4.0.0",
+    "readable-stream": "1.x",
     "sinon": "^1.17.0"
   },
   "peerDependencies": {
