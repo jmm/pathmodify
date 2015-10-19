@@ -73,6 +73,7 @@ describe('Plugin', function () {
    * @return function
    */
   function make_bundle_cb (opts, done) {
+    opts = opts || {};
     return function (err, src) {
       if (err) return done(err);
 
