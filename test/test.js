@@ -617,4 +617,21 @@ describe('Plugin', function () {
       b.bundle(bundle_cb);
     }
   );
+
+  // This is primarily to increase coverage.
+  it(
+    "Should error when resolving without alias configured.",
+    function (done) {
+      var
+        opts = {require_id: null};
+
+      var b = run_test({
+        test: opts,
+        done: function (err) {
+          assert(err);
+          done();
+        },
+      });
+    }
+  );
 });
