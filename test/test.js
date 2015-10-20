@@ -1,5 +1,5 @@
 var
-  bify = require('browserify'),
+  browserify = require('browserify'),
   rs = require('readable-stream'),
   util = require('util'),
   pathmodify = require('../'),
@@ -17,13 +17,13 @@ tests_path.join = function join () {
 };
 
 // Transform stream to test programatic transforms.
-function Xform () {
+function Uppercaser () {
   rs.Transform.apply(this, arguments);
 }
 
-util.inherits(Xform, rs.Transform);
+util.inherits(Uppercaser, rs.Transform);
 
-Xform.prototype._transform = function (chunk, enc, cb) {
+Uppercaser.prototype._transform = function (chunk, enc, cb) {
   this.push(chunk.toString().replace("lowercase", "UPPERCASE"));
   cb();
 };
@@ -58,9 +58,9 @@ describe('Plugin', function () {
   function make_bundler (opts) {
     opts = opts || {};
 
-    return bify(opts.browserify)
+    return browserify(opts.browserify)
       .plugin(pathmodify(), opts.plugin)
-      .transform(function (file) { return new Xform; })
+      .transform(function (file) { return new Uppercaser; })
     ;
   }
   // make_bundler
