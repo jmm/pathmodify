@@ -15,6 +15,8 @@ plugin = (function (plugin) {
 function pathmodify (b, opts) {
   opts = opts || {};
 
+  opts = {mods: opts.mods};
+
   // Map resolved pathnames to expose IDs.
   opts.mappings = {};
 
