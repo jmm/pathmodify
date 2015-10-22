@@ -30,7 +30,7 @@
     "exposure"
   ],
   "scripts": {
-    "test": "istanbul cover _mocha test/*.js"
+    "test": "istanbul cover _mocha 'test/{integration,unit}/*.js' -- --recursive"
   },
   "dependencies": {
     "readable-stream": "1.x"
