@@ -8,8 +8,6 @@ var
   EventEmitter = require('events').EventEmitter,
   util = require('util');
 
-pathmodify = pathmodify();
-
 describe('Plugin', function () {
   var
     b,

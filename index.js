@@ -1,18 +1,23 @@
 var
   rs = require('readable-stream'),
   plugin,
-  slash = {fwd: '/', back: '\\'};
+  slash = {fwd: '/', back: '\\'},
+  util = require('util');
 
-plugin = (function (plugin) {
-  return module.exports = function pathmodify () {
-    return plugin;
-  };
-})(pathmodify);
+module.exports = plugin = pathmodify;
 
 /**
  * Main plugin.
  */
 function pathmodify (b, opts) {
+  // Temporarily allow people to continue using this by calling it as a factory
+  // function, even though they should be mindful of semver.
+  if (! arguments.length) {
+    return util.deprecate(
+      pathmodify,
+      "Deprecated: pathmodify: Don't call the export as a factory. The export is now the plugin function."
+    );
+  }
   opts = opts || {};
 
   opts = {mods: opts.mods};

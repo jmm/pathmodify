@@ -7,7 +7,7 @@ This is a [browserify](https://github.com/substack/node-browserify) plugin that'
 var pathmodify = require('pathmodify');
 
 browserify()
-  .plugin(pathmodify(), {mods: [
+  .plugin(pathmodify, {mods: [
     // Make code like `require('app/something')` act like
     // `require('/somedir/src/something')`
     pathmodify.mod.dir('app', '/somedir/src')
@@ -80,7 +80,7 @@ var opts = {
 };
 
 browserify('./src/entry')
-  .plugin(pathmodify(), opts)
+  .plugin(pathmodify, opts)
 ```
 
 When the mod is a function it will receive an object like this:
@@ -127,7 +127,7 @@ With this plugin you can get the best of both worlds by symlinking your applicat
 ```jS
 // Point browserify to `./src/...`, not `app/...`
 browserify('./src/entry')
-  .plugin(pathmodify(), {mods: [
+  .plugin(pathmodify, {mods: [
     pathmodify.mod.dir('app', path.join(__dirname, 'src'))
   ]})
 ```

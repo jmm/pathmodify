@@ -61,7 +61,7 @@ describe('Plugin', function () {
     opts = opts || {};
 
     return browserify(opts.browserify)
-      .plugin(pathmodify(), opts.plugin)
+      .plugin(pathmodify, opts.plugin)
       .transform(function (file) { return new Uppercaser; })
     ;
   }
@@ -636,7 +636,7 @@ describe('Plugin', function () {
         b = browserify(assign({}, options.browserify, {
           entries: ["./src/no-aliased-requires"]
         }))
-          .plugin(pathmodify(), pathmodify_opts)
+          .plugin(pathmodify, pathmodify_opts)
           .on("update", function () {
             bundle(b);
           })
