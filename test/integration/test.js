@@ -2,7 +2,7 @@ var
   browserify = require('browserify'),
   rs = require('readable-stream'),
   util = require('util'),
-  pathmodify = require('../'),
+  pathmodify = require('../../'),
   path = require('path'),
   assert = require('assert'),
   sinon = require('sinon'),
@@ -33,15 +33,17 @@ describe('Plugin', function () {
     options = {},
     paths = {};
 
+  paths.basedir = path.join(__dirname, '..');
+  paths.src = tests_path.join(paths.basedir, 'src');
+
   options.browserify = {
-    entries: ['./src/entry'],
-    basedir: __dirname,
+    entries: [path.join(paths.src, 'entry')],
+    basedir: paths.basedir,
   };
 
   paths.sep = '/';
   tests_path.sep = paths.sep;
 
-  paths.src = tests_path.join(__dirname, 'src');
   paths.prefix = 'app';
   paths.subdir = 'a';
   paths.basename = paths.subdir;
