@@ -20,7 +20,7 @@ function pathmodify (b, opts) {
   }
   opts = opts || {};
 
-  opts = {mods: opts.mods};
+  opts = {mods: [].concat(opts.mods || [])};
 
   // Map resolved pathnames to expose IDs.
   opts.mappings = {};
