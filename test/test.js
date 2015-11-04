@@ -634,4 +634,58 @@ describe('Plugin', function () {
       });
     }
   );
+
+  // Guard against regression of https://github.com/jmm/pathmodify/issues/5.
+  it(
+    "Should work on out of order rebundle with 'shared' opts.",
+    function (done) {
+      var
+        bundlers = Array.apply(0, Array(2))
+        pending = 0;
+
+      var pathmodify_opts = {mods: [
+      ]};
+
+      // Create and b.bundle each bundler.
+      bundlers.forEach(function (b, i) {
+        b = browserify(assign({}, options.browserify, {
+          entries: ["./src/no-aliased-requires"]
+        }))
+          .plugin(pathmodify(), pathmodify_opts)
+          .on("update", function () {
+            bundle(b);
+          })
+        ;
+
+        bundlers[i] = b;
+        ++pending;
+        bundle(b);
+      });
+
+      function bundle (b) {
+         b
+          .bundle(function (err) {
+            assert(! err, err);
+            if (! --pending) {
+              // When both original b.bundle()'s are done, update them, and
+              // make it so that next time done() is called.
+              do_updates();
+              do_updates = done;
+            }
+          })
+        ;
+      }
+      // bundle
+
+      // Cause each bundle to be b.bundle()'d again -- in reverse order.
+      function do_updates () {
+        [].concat(bundlers).reverse().forEach(function (b) {
+          ++pending;
+          b.emit("update");
+        });
+      }
+      // do_updates
+    }
+  );
+  // it
 });
