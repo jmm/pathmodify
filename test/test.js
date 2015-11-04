@@ -618,23 +618,6 @@ describe('Plugin', function () {
     }
   );
 
-  // This is primarily to increase coverage.
-  it(
-    "Should error when resolving without alias configured.",
-    function (done) {
-      var
-        opts = {require_id: null};
-
-      var b = run_test({
-        test: opts,
-        done: function (err) {
-          assert(err);
-          done();
-        },
-      });
-    }
-  );
-
   // Guard against regression of https://github.com/jmm/pathmodify/issues/5.
   it(
     "Should work on out of order rebundle with 'shared' opts.",
@@ -685,6 +668,24 @@ describe('Plugin', function () {
         });
       }
       // do_updates
+    }
+  );
+  // it
+
+  // This is primarily to increase coverage.
+  it(
+    "Should error when resolving without alias configured.",
+    function (done) {
+      var
+        opts = {require_id: null};
+
+      var b = run_test({
+        test: opts,
+        done: function (err) {
+          assert(err);
+          done();
+        },
+      });
     }
   );
   // it
