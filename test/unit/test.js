@@ -8,11 +8,16 @@ var
   EventEmitter = require('events').EventEmitter,
   util = require('util');
 
+var real_pathmodify = pathmodify;
+
+pathmodify = function (b, opts) {
+  real_pathmodify.call(this, b, opts);
+  b.__test.init_new_resolver();
+};
+
 describe('Plugin', function () {
   var
     b,
-    original_resolver,
-    new_resolver,
     resolver_done,
     // Pathmodify opts.
     opts;
@@ -65,10 +70,18 @@ describe('Plugin', function () {
       pack: make_phase(),
     };
 
+    // Augment the object with properties / methods related to testing.
+    b.__test = {
+      init_new_resolver: function () {
+        this.__test.new_resolver = sinon.spy(
+          this.pipeline.get("deps").get(0), "resolver");
+      }.bind(b),
+    };
+
     // Stub the original resolver.
-    original_resolver = sinon.spy(function (id, opts, cb) {
+    b.__test.original_resolver = sinon.spy(function (id, opts, cb) {
       var
-        cfg = original_resolver.cb_args,
+        cfg = this.__test.original_resolver.cb_args,
         res = cfg.res;
       if (! (cfg.err || res)) res = id;
       cb(
@@ -76,11 +89,13 @@ describe('Plugin', function () {
         res,
         cfg.pkg
       );
-    });
+    }.bind(b));
+
+    b.__test.original_resolver.cb_args = {};
 
     // Placeholder for deps[0] (module-deps).
     pipeline.get('deps').push({
-      resolver: original_resolver,
+      resolver: b.__test.original_resolver,
     });
 
     // Placeholder for pack[0] (browser-pack).
@@ -97,14 +112,14 @@ describe('Plugin', function () {
     this.emit('reset');
   };
 
-  function init_new_resolver () {
-    new_resolver = sinon.spy(b.pipeline.get("deps").get(0), "resolver");
+  function make_browserify_stub () {
+    var b = new Browserify;
+    sinon.spy(b, "on");
+    return b;
   }
 
   beforeEach(function () {
-    b = new Browserify;
-    sinon.spy(b, "on");
-    original_resolver.cb_args = {};
+    b = make_browserify_stub();
     resolver_done = sinon.spy();
   });
   // beforeEach
@@ -176,23 +191,22 @@ describe('Plugin', function () {
 
   it("Resolves without modifier, without error", function () {
     pathmodify(b, opts);
-    init_new_resolver();
 
     assert(
-      original_resolver !== new_resolver,
+      b.__test.original_resolver !== b.__test.new_resolver,
       "Custom resolver() not implemented"
     );
 
-    new_resolver("b", {}, resolver_done);
+    b.__test.new_resolver("b", {}, resolver_done);
 
     assert(
-      original_resolver.callCount === new_resolver.callCount,
+      b.__test.original_resolver.callCount === b.__test.new_resolver.callCount,
       "Original resolver() not called correct number of times"
     );
 
     assert.deepStrictEqual(
-      original_resolver.args[0].slice(0, 2),
-      new_resolver.args[0].slice(0, 2),
+      b.__test.original_resolver.args[0].slice(0, 2),
+      b.__test.new_resolver.args[0].slice(0, 2),
       "Original resolver() not called with correct args"
     );
   });
@@ -204,11 +218,10 @@ describe('Plugin', function () {
       pathmodify_resolved_handler = sinon.spy();
 
     pathmodify(b, opts);
-    init_new_resolver();
 
     b.on("pathmodify:resolved", pathmodify_resolved_handler);
 
-    new_resolver(require_id, parent, sinon.spy());
+    b.__test.new_resolver(require_id, parent, sinon.spy());
 
     assert(
       pathmodify_resolved_handler.callCount === 1,
@@ -234,13 +247,12 @@ describe('Plugin', function () {
       pathmodify_resolved_handler = sinon.spy();
 
     pathmodify(b, opts);
-    init_new_resolver();
 
     b.on("pathmodify:resolved", pathmodify_resolved_handler);
 
-    original_resolver.cb_args.err = new Error;
+    b.__test.original_resolver.cb_args.err = new Error;
 
-    new_resolver("dep-before", {}, resolver_done);
+    b.__test.new_resolver("dep-before", {}, resolver_done);
 
     assert(
       ! Object.keys(b._expose).length,
@@ -266,12 +278,11 @@ describe('Plugin', function () {
     // Logic common to it()'s in this describe()
     function run_test (opts) {
       pathmodify(b, opts);
-      init_new_resolver();
 
-      new_resolver(require_id, {}, resolver_done);
+      b.__test.new_resolver(require_id, {}, resolver_done);
 
       assert(
-        original_resolver.args[0][0] === alias.id,
+        b.__test.original_resolver.args[0][0] === alias.id,
         "Require ID not aliased"
       );
     }
@@ -389,12 +400,11 @@ describe('Plugin', function () {
       ]};
 
     pathmodify(b, opts);
-    init_new_resolver();
 
-    new_resolver(require_id, {}, resolver_done);
+    b.__test.new_resolver(require_id, {}, resolver_done);
 
     assert(
-      original_resolver.args[0][0] === require_id,
+      b.__test.original_resolver.args[0][0] === require_id,
       "Require ID aliased"
     );
   });
@@ -414,12 +424,11 @@ describe('Plugin', function () {
     // Logic common to it()'s in this describe().
     function run_test (opts, done) {
       pathmodify(b, opts);
-      init_new_resolver();
 
-      new_resolver(require_id, {}, resolver_done);
+      b.__test.new_resolver(require_id, {}, resolver_done);
 
       assert(
-        original_resolver.args[0][0] === alias.id,
+        b.__test.original_resolver.args[0][0] === alias.id,
         "Require ID not aliased"
       );
 
@@ -501,11 +510,10 @@ describe('Plugin', function () {
       aliaser_dest = new rs.PassThrough({objectMode: true});
 
     pathmodify(b, opts);
-    init_new_resolver();
 
-    original_resolver.cb_args.res = alias.id;
+    b.__test.original_resolver.cb_args.res = alias.id;
 
-    new_resolver(require_id, {}, resolver_done);
+    b.__test.new_resolver(require_id, {}, resolver_done);
 
     aliaser = b.pipeline.get('deps').get(1);
 
@@ -527,10 +535,9 @@ describe('Plugin', function () {
       ]};
 
     pathmodify(b, opts);
-    init_new_resolver();
 
     for (i = 1; i <= 2; ++i) {
-      new_resolver(require_id, {}, resolver_done);
+      b.__test.new_resolver(require_id, {}, resolver_done);
     }
 
     assert(
