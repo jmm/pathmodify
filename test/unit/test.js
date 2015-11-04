@@ -211,6 +211,24 @@ describe('Plugin', function () {
     );
   });
 
+  // Guard against regression of https://github.com/jmm/pathmodify/issues/5.
+  it("Doesn't crash when options are 'shared'", function () {
+    var
+      currentOpts = assign({}, opts),
+      bundles = Array.apply(0, Array(2));
+
+    bundles.forEach(function (b, i) {
+      b = bundles[i] = make_browserify_stub();
+      pathmodify(b, currentOpts);
+    });
+
+    bundles[0].reset();
+
+    assert.doesNotThrow(function () {
+      bundles[1].__test.new_resolver("b", {}, resolver_done);
+    });
+  });
+
   it("Emits pathmodify:resolved", function () {
     var
       parent = {filename: "parent"},
