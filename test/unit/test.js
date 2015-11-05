@@ -141,6 +141,23 @@ describe('Plugin', function () {
     );
   });
 
+  it("Doesn't allow mutation of opts.mods after instantiation", function () {
+    var
+      require_id = "dep-before",
+      opts = {mods: [
+      ]};
+
+    pathmodify(b, opts);
+    opts.mods.push(sinon.spy());
+
+    b.__test.new_resolver(require_id, {}, resolver_done);
+
+    assert(
+      opts.mods[0].callCount === 0,
+      "Mod added after instantiation was called"
+    );
+  });
+
   it("Pushes aliaser stream", function () {
     var aliaser;
 
