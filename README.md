@@ -6,10 +6,12 @@ This is a [browserify](https://github.com/substack/node-browserify) plugin that'
 ```js
 var pathmodify = require('pathmodify');
 
+// Make bundled code like:
+// `require('app/something')`
+// act like:
+// `require('/somedir/src/something')`
 browserify()
   .plugin(pathmodify, {mods: [
-    // Make code like `require('app/something')` act like
-    // `require('/somedir/src/something')`
     pathmodify.mod.dir('app', '/somedir/src')
   ]})
 ```
@@ -18,7 +20,11 @@ browserify()
 
 Avoid having to use cumbersome relative paths (`../../../../../../..`) in your browserified application, and still be able to apply transforms programatically: `browserify().transform(something)`.
 
-This plugin allows you to rewrite (AKA alias, map) `require()` IDs / paths to different values. For example, rewrite `require('app/model/something')` to a relative path like `./model/something`. This can be used to alias entire directories or any specific modules / ID string passed to `require()`, and the rewriting can be dependent on the path of the requiring file as well.
+This plugin allows you to:
+
+* Rewrite (AKA alias, map) `require()` IDs / paths to different values. For example, rewrite `require('app/model/something')` to an absolute path like `/somedir/model/something`. This can be used to alias entire directories or any specific module ID or path passed to `require()`, and the rewriting can be dependent on the path of the requiring file as well.
+
+* And / or expose modules via the `require` function exported by the bundle, like `b.require("something", {expose: "whatever"})`.
 
 Say you have a directory structure like...
 
@@ -33,7 +39,7 @@ Say you have a directory structure like...
 
 ...and `entry.js` is the entry point to a dependency graph with a bunch of files not pictured. And say you don't want to store the application files you're going to browserify in `node_modules` or symlink them there because it will break programmatic application of transforms (`browserify().transform(whatever)`). (But, see below -- you can combine this tool with symlinking to get the best of both worlds.)
 
-pathmodify allows you to `require()` files like `somedir/src/model/whatever.js` from anywhere in the dependency graph without using `./` or `../` relative paths, enabing a `something.js` like this for example:
+pathmodify allows you to `require()` files like `somedir/src/model/whatever.js` from anywhere in the dependency graph without using `./` or `../` relative paths, enabling a `something.js` like this for example:
 
 ```es6
 require('app/model/whatever');
