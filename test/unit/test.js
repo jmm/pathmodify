@@ -447,11 +447,12 @@ describe('Plugin', function () {
   describe("Resolves and exposes", function () {
     var
       require_id = "dep-before",
-      alias = {id: "dep-after"},
+      alias,
       aliaser,
       aliaser_dest;
 
     beforeEach(function () {
+      alias = {id: "dep-after"};
       aliaser_dest = new rs.Transform({objectMode: true});
     });
     // beforeEach
@@ -516,7 +517,22 @@ describe('Plugin', function () {
     });
     // it
 
-    it("`id` modifier / expose function", function (done) {
+    it("`id` modifier / `to` function", function (done) {
+      var
+        opts = {mods: [
+        ]};
+
+      alias.expose = require_id;
+
+      opts.mods.push(mod.id(require_id, function () {
+        return alias;
+      }));
+
+      run_test(opts, done);
+    });
+    // it
+
+    it("`id` modifier / `expose` function", function (done) {
       var
         opts = {mods: [
         ]};
