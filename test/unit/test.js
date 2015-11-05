@@ -490,7 +490,7 @@ describe('Plugin', function () {
     }
     // run_test
 
-    it("Resolves `id` modifier & exposes via explicit id", function (done) {
+    it("`id` modifier / explicit id", function (done) {
       var
         opts = {mods: [
         ]};
@@ -505,7 +505,7 @@ describe('Plugin', function () {
     });
     // it
 
-    it("Resolves `id` modifier & exposes via flag", function (done) {
+    it("`id` modifier / flag", function (done) {
       var
         opts = {mods: [
           mod.id(require_id, alias.id, true),
@@ -516,7 +516,7 @@ describe('Plugin', function () {
     });
     // it
 
-    it("Resolves `id` modifier & exposes via expose function", function (done) {
+    it("`id` modifier / expose function", function (done) {
       var
         opts = {mods: [
         ]};
