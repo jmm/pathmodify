@@ -1,11 +1,11 @@
 {
   "name": "pathmodify",
   "version": "0.4.0",
-  "main": "index.js",
+  "main": "pathmodify.js",
   "license": "MIT",
   "author": "Jesse McCarthy (http://software.jessemccarthy.net/)",
   "files": [
-    "index.js",
+    "pathmodify.js",
     "package.json",
     "README.md",
     "LICENSE",
