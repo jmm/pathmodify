@@ -1,4 +1,4 @@
-# Unreleased
+# 0.5.0
 
 ## Changed
 * This now exports the plugin function instead of a factory, better conforming to the browserify plugin API. So usage is changed from `b.plugin(require("pathmodify")())` to `b.plugin(require("pathmodify"))`.
