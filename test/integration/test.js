@@ -33,6 +33,8 @@ describe('Plugin', function () {
     options = {},
     paths = {};
 
+  this.slow(400);
+
   paths.basedir = path.join(__dirname, '..');
   paths.src = tests_path.join(paths.basedir, 'src');
 
